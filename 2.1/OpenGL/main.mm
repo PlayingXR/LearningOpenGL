@@ -191,7 +191,7 @@ int main(int argc, const char * argv[]) {
             
             glUseProgram(shaderProgram);
             //使用指定的着色器，在后面的每个着色器调用和渲染调用都会使用这个着色程序
-            
+               
             glBindVertexArray(VAO);
             
 //            glDrawArrays(GL_TRIANGLES, 0, 3);
