@@ -9,6 +9,7 @@
 #include <glad/glad.h>
 #include "GLFW/glfw3.h"
 #include <iostream>
+#include <cmath>
 
 bool isLineModel = false;
 
@@ -54,22 +55,27 @@ const unsigned int SCR_HEIGHT = 600;
 
 const char *vertexShaderSource = "#version 330 core\n"
 "layout (location = 0) in vec3 aPos;\n"
+"out vec4 vertexColor;\n"
 "void main()\n"
 "{\n"
-"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+"   gl_Position = vec4(aPos,1.0);\n"
+"   vertexColor = vec4(0.5, 0.0, 0.0, 1.0);\n"
 "}\0";
 const char *fragmentShaderSource = "#version 330 core\n"
 "out vec4 FragColor;\n"
+"in vec4 vertexColor;\n"
+"uniform vec4 ourColor;\n"
 "void main()\n"
 "{\n"
-"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+"   FragColor = ourColor;\n"
 "}\n\0";
 
 const char *fragmentShaderSource2 = "#version 330 core\n"
 "out vec4 FragColor;\n"
+"in vec4 vertexColor;\n"
 "void main()\n"
 "{\n"
-"   FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);\n"
+"   FragColor = vertexColor;\n"
 "}\n\0";
 
 
@@ -236,9 +242,16 @@ int main(int argc, const char * argv[]) {
             //glClear是一个状态使用函数，清除深度缓冲
             glClear(GL_COLOR_BUFFER_BIT);
             
+            float timeValue = glfwGetTime();
+            float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+            int vertexColorLocation = glGetUniformLocation(shaderProgram[0], "ourColor");
+            
+            
+            
             glUseProgram(shaderProgram[0]);
             //使用指定的着色器，在后面的每个着色器调用和渲染调用都会使用这个着色程序
-               
+            
+            glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
             glBindVertexArray(VAOs[0]);
             
 //            glDrawArrays(GL_TRIANGLES, 0, 3);
