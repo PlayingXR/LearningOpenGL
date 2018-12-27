@@ -46,6 +46,8 @@
 		E87F4D3121AD7F8800402370 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		E8AD29C421D24FA500DF480F /* Shader.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Shader.cpp; sourceTree = "<group>"; };
 		E8AD29C521D24FA500DF480F /* Shader.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Shader.hpp; sourceTree = "<group>"; };
+		E8AD29D221D4F50D00DF480F /* shader.vs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = shader.vs; sourceTree = "<group>"; };
+		E8AD29D321D4F50D00DF480F /* shader.fs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = shader.fs; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -123,6 +125,8 @@
 				E86D2EA121C52FFB001133E3 /* 3.3.shaders_class.mm */,
 				E8AD29C521D24FA500DF480F /* Shader.hpp */,
 				E8AD29C421D24FA500DF480F /* Shader.cpp */,
+				E8AD29D221D4F50D00DF480F /* shader.vs */,
+				E8AD29D321D4F50D00DF480F /* shader.fs */,
 				E816F91121AD868500A214B7 /* GLAD */,
 				E816F91721AD868500A214B7 /* GLFW */,
 			);

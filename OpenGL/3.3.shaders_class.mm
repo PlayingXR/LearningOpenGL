@@ -10,6 +10,7 @@
 #include "GLFW/glfw3.h"
 #include <iostream>
 #include <cmath>
+#include "Shader.hpp"
 
 bool isLineModel = false;
 
@@ -46,23 +47,6 @@ unsigned int indices[] = {
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-
-const char *vertexShaderSource = "#version 330 core\n"
-"layout (location = 0) in vec3 aPos;\n"
-"layout (location = 1) in vec3 aColor;\n"
-"out vec3 ourColor;\n"
-"void main()\n"
-"{\n"
-"   gl_Position = vec4(aPos,1.0);\n"
-"   ourColor = aColor;\n"
-"}\0";
-const char *fragmentShaderSource = "#version 330 core\n"
-"out vec4 FragColor;\n"
-"in vec3 ourColor;\n"
-"void main()\n"
-"{\n"
-"   FragColor = vec4(ourColor, 1.0);\n"
-"}\n\0";
 
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
@@ -102,51 +86,53 @@ int main(int argc, const char * argv[]) {
         glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
         std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;
         
-        //vertex shader
-        unsigned int vertexShader;
-        vertexShader = glCreateShader(GL_VERTEX_SHADER);
-        //使用glCreateShader来创建着色器，参数是类型，GL_VERTEX_SHADER表示是顶点着色器
-        glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-        //用glShaderSource函数来编译着色器
-        //第一个参数是着色器对象，
-        //第二个参数是源码字符串的数量
-        //第三个参数是源码
-        //第四个。。。
-        glCompileShader(vertexShader);
+//        //vertex shader
+//        unsigned int vertexShader;
+//        vertexShader = glCreateShader(GL_VERTEX_SHADER);
+//        //使用glCreateShader来创建着色器，参数是类型，GL_VERTEX_SHADER表示是顶点着色器
+//        glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+//        //用glShaderSource函数来编译着色器
+//        //第一个参数是着色器对象，
+//        //第二个参数是源码字符串的数量
+//        //第三个参数是源码
+//        //第四个。。。
+//        glCompileShader(vertexShader);
+//
+//        //检查是否编译成功
+//        int success;
+//        char infoLog[512];
+//        glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+//        if (!success) {
+//            glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+//            std::cout << "ERROR::COMPILE VERTEX SHADER";
+//        }
+//
+//        unsigned int fragmentShader;
+//        fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+//        glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+//        glCompileShader(fragmentShader);
+//
+//        glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+//        if (!success) {
+//            glad_glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+//            std::cout << "ERROR::COMPILE FRAGMENT SHADER";
+//        }
+//
+//
+//
+//        unsigned int shaderProgram;
+//        shaderProgram = glCreateProgram();
+//        glAttachShader(shaderProgram, vertexShader);
+//        glAttachShader(shaderProgram, fragmentShader);
+//        glLinkProgram(shaderProgram);
+//        //把顶点着色器和片段着色器装载到着色器程序上
+//        //使用glLinkProgram进行链接
+//
+//        glDeleteShader(vertexShader);
+//        glDeleteShader(fragmentShader);
+//        //手动释放不需要的资源
         
-        //检查是否编译成功
-        int success;
-        char infoLog[512];
-        glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-        if (!success) {
-            glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-            std::cout << "ERROR::COMPILE VERTEX SHADER";
-        }
-        
-        unsigned int fragmentShader;
-        fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-        glCompileShader(fragmentShader);
-        
-        glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-        if (!success) {
-            glad_glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-            std::cout << "ERROR::COMPILE FRAGMENT SHADER";
-        }
-
-        
-        
-        unsigned int shaderProgram;
-        shaderProgram = glCreateProgram();
-        glAttachShader(shaderProgram, vertexShader);
-        glAttachShader(shaderProgram, fragmentShader);
-        glLinkProgram(shaderProgram);
-        //把顶点着色器和片段着色器装载到着色器程序上
-        //使用glLinkProgram进行链接
-        
-        glDeleteShader(vertexShader);
-        glDeleteShader(fragmentShader);
-        //手动释放不需要的资源
+        Shader ourShader("/Users/wxh/Desktop/LearningOpenGL/OpenGL/shader.vs", "/Users/wxh/Desktop/LearningOpenGL/OpenGL/shader.fs");
         
         //创建VAO
         unsigned int VAO, VBO, EBO;
@@ -191,6 +177,7 @@ int main(int argc, const char * argv[]) {
         
         glBindVertexArray(0);
         
+        float center[] = {-0.25f, 0.25f, 0.0f};
         //使用while循环来不断的渲染画面，我们称之为渲染循环（Render Loop）
         //没次循环开始之前检查一次GLFW是否被要求退出
         while (!glfwWindowShouldClose(window)) {
@@ -204,7 +191,10 @@ int main(int argc, const char * argv[]) {
             //glClear是一个状态使用函数，清除深度缓冲
             glClear(GL_COLOR_BUFFER_BIT);
 
-            glUseProgram(shaderProgram);
+            ourShader.use();
+            ourShader.setVec3f("center", center);
+            ourShader.setFloat("offset", 0.5);
+//            glUseProgram(shaderProgram);
             //使用指定的着色器，在后面的每个着色器调用和渲染调用都会使用这个着色程序
             
             glBindVertexArray(VAO);
@@ -233,7 +223,7 @@ int main(int argc, const char * argv[]) {
         glDeleteBuffers(1, &VBO);
         glDeleteBuffers(1, &EBO);
         
-        glDeleteProgram(shaderProgram);
+//        glDeleteProgram(shaderProgram);
         
         //当渲染循环结束后我们需要正确释放所有资源
         glfwTerminate();

@@ -96,4 +96,15 @@ void Shader::setFloat(const std::string &name, float value) const
 {
     glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
 }
+void Shader::setVec3f(const std::string &name, float value[]) const
+{
+    glUniform3f(glGetUniformLocation(ID, name.c_str()), value[0], value[1], value[2]);
+}
+Shader::~Shader()
+{
+    if (ID != 0) {
+        glDeleteProgram(ID);
+    }
+}
+
 
