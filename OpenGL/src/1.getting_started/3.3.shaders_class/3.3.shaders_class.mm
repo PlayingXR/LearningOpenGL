@@ -40,12 +40,6 @@ float vertices[] = {
     -0.25f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f
 };
 
-float texCoords[] = {
-    0.0f, 0.0f, //左下角
-    1.0f, 0.0f, //右下角
-    0.5f, 1.0f  //上中
-};
-
 unsigned int indices[] = {
     0, 1, 2
 };
