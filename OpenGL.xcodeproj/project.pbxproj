@@ -14,7 +14,7 @@
 		E87F4D2E21AD7F7A00402370 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E87F4D2D21AD7F7A00402370 /* GLUT.framework */; };
 		E87F4D3021AD7F8100402370 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E87F4D2F21AD7F8100402370 /* CoreVideo.framework */; };
 		E87F4D3221AD7F8800402370 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E87F4D3121AD7F8800402370 /* IOKit.framework */; };
-		E8A80E8021F0D25B00F4C528 /* 4.2.textures_combined.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8A80E7F21F0D25B00F4C528 /* 4.2.textures_combined.mm */; };
+		E8A80E8021F0D25B00F4C528 /* 5.2.transformations_exercise2.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8A80E7F21F0D25B00F4C528 /* 5.2.transformations_exercise2.mm */; };
 		E8A80E8521F0D2BB00F4C528 /* Shader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8A80E8121F0D2BA00F4C528 /* Shader.cpp */; };
 /* End PBXBuildFile section */
 
@@ -141,11 +141,12 @@
 		E8A80E7C21F0BD7E00F4C528 /* cyborg_specular.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cyborg_specular.png; sourceTree = "<group>"; };
 		E8A80E7D21F0BD7E00F4C528 /* cyborg.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cyborg.mtl; sourceTree = "<group>"; };
 		E8A80E7E21F0BD7E00F4C528 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
-		E8A80E7F21F0D25B00F4C528 /* 4.2.textures_combined.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = 4.2.textures_combined.mm; sourceTree = "<group>"; };
+		E8A80E7F21F0D25B00F4C528 /* 5.2.transformations_exercise2.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = 5.2.transformations_exercise2.mm; sourceTree = "<group>"; };
 		E8A80E8121F0D2BA00F4C528 /* Shader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Shader.cpp; sourceTree = "<group>"; };
 		E8A80E8221F0D2BA00F4C528 /* Shader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Shader.hpp; sourceTree = "<group>"; };
 		E8A80E8321F0D2BA00F4C528 /* shader.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = shader.vs; sourceTree = "<group>"; };
 		E8A80E8421F0D2BA00F4C528 /* shader.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = shader.fs; sourceTree = "<group>"; };
+		E8A8100221F89F9300F4C528 /* glm */ = {isa = PBXFileReference; lastKnownFileType = folder; path = glm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -220,12 +221,13 @@
 		E87F4CE521AD772F00402370 /* OpenGL */ = {
 			isa = PBXGroup;
 			children = (
-				E8A80E7F21F0D25B00F4C528 /* 4.2.textures_combined.mm */,
+				E8A80E7F21F0D25B00F4C528 /* 5.2.transformations_exercise2.mm */,
 				E8A80E8221F0D2BA00F4C528 /* Shader.hpp */,
 				E8A80E8121F0D2BA00F4C528 /* Shader.cpp */,
 				E8A80E8321F0D2BA00F4C528 /* shader.vs */,
 				E8A80E8421F0D2BA00F4C528 /* shader.fs */,
 				E8A80E0E21F0BC4C00F4C528 /* stb_image.h */,
+				E8A8100221F89F9300F4C528 /* glm */,
 				E8A80E0F21F0BD7D00F4C528 /* resources */,
 				E816F91121AD868500A214B7 /* GLAD */,
 				E816F91721AD868500A214B7 /* GLFW */,
@@ -518,7 +520,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E8A80E8021F0D25B00F4C528 /* 4.2.textures_combined.mm in Sources */,
+				E8A80E8021F0D25B00F4C528 /* 5.2.transformations_exercise2.mm in Sources */,
 				E8A80E8521F0D2BB00F4C528 /* Shader.cpp in Sources */,
 				E816F91B21AD868500A214B7 /* glad.c in Sources */,
 			);
