@@ -8,20 +8,49 @@
 #include <iostream>
 #include <cmath>
 #include <glad/glad.h>
-
 #include "GLFW/glfw3.h"
-#include "Shader.hpp"
-
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
+#include <vector>
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+
+#include "Shader.hpp"
+#include "Camera.hpp"
+
+const unsigned int SCR_WIDTH = 800;
+const unsigned int SCR_HEIGHT = 600;
 
 bool isLineModel = false;
 
 float mixValue = 0.5;
+float x = 0.0f;
+float y = 0.0f;
+float z = -3.0f;
+
+float fov = 45.0f;
+
+float speed = 25.0f;
+
+float deltaTime = 0.0f; //当前帧与上一帧的时间差
+float lastFrame = 0.0f; //上一帧的时间
+
+float lastX = SCR_WIDTH / 2.0f;
+float lastY = SCR_HEIGHT / 2.0f;
+
+float pitch = 0.0f;
+float yaw = 0.0f;
+
+bool firstMouse = true;
+
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
 //窗口大小改变的回调
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
@@ -44,38 +73,97 @@ void processInput(GLFWwindow *window)
     
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
         mixValue -= 0.001f;
-        
+
         if (mixValue <= 0.0f) {
             mixValue = 0.0f;
         }
     }
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
         mixValue += 0.001f;
-        
+
         if (mixValue >= 1.0f) {
             mixValue = 1.0f;
         }
     }
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        camera.ProcessKeyboard(FORWARD, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        camera.ProcessKeyboard(BACKWARD, deltaTime);
+    
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+         camera.ProcessKeyboard(LEFT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        camera.ProcessKeyboard(RIGHT, deltaTime);
+}
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+    if (firstMouse) {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+    
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos;
+    
+    lastX = xpos;
+    lastY = ypos;
+    
+    camera.ProcessMouseMovement(xoffset, yoffset);
+}
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+    camera.ProcessMouseScroll(yoffset);
 }
 
 float vertices[] = {
-    //     ---- 位置 ----       ---- 颜色 ----     - 纹理坐标 -
-    0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // 右上
-    0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // 右下
-    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // 左下
-    -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // 左上
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+    0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+    
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+    0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+    0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    
+    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    
+    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+    0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+    0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 };
 
 unsigned int indices[] = {
     0, 2, 1,
     2, 0, 3
 };
-
-
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
-
-
 
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
@@ -99,6 +187,7 @@ int main(int argc, const char * argv[]) {
             return -1;
         }
         glfwMakeContextCurrent(window);
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         
         //在调用任何OpenGL的函数之前我们需要初始化GLAD
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -108,6 +197,8 @@ int main(int argc, const char * argv[]) {
         
         glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
         glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+        glfwSetCursorPosCallback(window, mouse_callback);
+        glfwSetScrollCallback(window, scroll_callback);
         
         int nrAttributes;
         glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
@@ -159,7 +250,7 @@ int main(int argc, const char * argv[]) {
         unsigned int VAO, VBO, EBO;
         glGenVertexArrays(1, &VAO);
         glGenBuffers(1, &VBO);
-        glGenBuffers(1, &EBO);
+//        glGenBuffers(1, &EBO);
         
         //绑定VAO
         glBindVertexArray(VAO);
@@ -171,8 +262,8 @@ int main(int argc, const char * argv[]) {
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
         
         //绑定EBO
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+//        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+//        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
         
         //glBufferData是一个专门把用户定义的数据复制到当前绑定的缓冲的buffer里
         //第一个参数是目标缓冲的类型
@@ -184,7 +275,7 @@ int main(int argc, const char * argv[]) {
         //GL_STREAM_DRAW：数据每次绘制都会改变
         
         //设置顶点属性指针
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
         //第一个参数：顶点属性，与vertex shader中的location = 0对应
         //第二个参数：每一个顶点属性的分量个数
         //第三个参数：每个分量的类型
@@ -193,11 +284,11 @@ int main(int argc, const char * argv[]) {
         //第六个参数：位置数据在缓冲中起始位置的偏移量
         glEnableVertexAttribArray(0);
         
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
         glEnableVertexAttribArray(1);
         
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
-        glEnableVertexAttribArray(2);
+//        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
+//        glEnableVertexAttribArray(2);
         
         glBindVertexArray(0);
         
@@ -205,11 +296,55 @@ int main(int argc, const char * argv[]) {
         ourShader.setInt("texture1", 0);
         ourShader.setInt("texture2", 1);
         
+        //模型矩阵，从模型坐标系转换到世界坐标系
+        glm::mat4 model = glm::mat4(1.0f);
+//        model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         
-        float center[] = {-0.25f, 0.25f, 0.0f};
+        //视图矩阵，从世界坐标系转换到观察空间
+//        glm::mat4 view = glm::mat4(1.0f);
+//        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+//
+//        glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+//        glm::vec3 cameraTarget = glm::vec3(0.0f ,0.0f ,0.0f);
+//        glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
+//
+//        glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+//        glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
+//        glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
+        
+//        glm::mat4 view = glm::lookAt(cameraPos, cameraTarget, up);
+        
+        //投影矩阵，从裁剪坐标系转换到屏幕坐标系
+        glm::mat4 projection = glm::mat4(1.0f);
+        projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        
+        glm::vec3 cubePositions[] = {
+            glm::vec3( 0.0f,  0.0f,  0.0f),
+            glm::vec3( 2.0f,  5.0f, -15.0f),
+            glm::vec3(-1.5f, -2.2f, -2.5f),
+            glm::vec3(-3.8f, -2.0f, -12.3f),
+            glm::vec3( 2.4f, -0.4f, -3.5f),
+            glm::vec3(-1.7f,  3.0f, -7.5f),
+            glm::vec3( 1.3f, -2.0f, -2.5f),
+            glm::vec3( 1.5f,  2.0f, -2.5f),
+            glm::vec3( 1.5f,  0.2f, -1.5f),
+            glm::vec3(-1.3f,  1.0f, -1.5f)
+        };
+        
+        model = glm::rotate(model, glm::radians(0.05f), glm::vec3(0.5f, 1.0f, 0.0f));
+        
+        ourShader.setMat4fv("model", glm::value_ptr(model));
+//        ourShader.setMat4fv("view", glm::value_ptr(view));
+        ourShader.setMat4fv("projection", glm::value_ptr(projection));
+        
+        glEnable(GL_DEPTH_TEST);
         //使用while循环来不断的渲染画面，我们称之为渲染循环（Render Loop）
         //没次循环开始之前检查一次GLFW是否被要求退出
         while (!glfwWindowShouldClose(window)) {
+            float currentFrame = glfwGetTime();
+            deltaTime = currentFrame - lastFrame;
+            lastFrame = currentFrame;
+            
             //输入
             processInput(window);
             
@@ -218,7 +353,7 @@ int main(int argc, const char * argv[]) {
             glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             
             //glClear是一个状态使用函数，清除深度缓冲
-            glClear(GL_COLOR_BUFFER_BIT);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, texture1);
@@ -229,43 +364,36 @@ int main(int argc, const char * argv[]) {
             ourShader.use();
             ourShader.setFloat("mixValue", mixValue);
             
-            glm::mat4 trans = glm::mat4(1.0f);
+            glm::mat4 view = camera.GetViewMatrix();
+            ourShader.setMat4fv("view", glm::value_ptr(view));
             
-            //先按顺时针旋转，再平移到vec3(0.5f, -0.5f, 0.0f))
-            trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
-            trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
-            
-            //先缩放0.5倍，再顺时针旋转90度
-//            trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-//            trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
-            ourShader.setMat4fv("transform", glm::value_ptr(trans));
-            
-//            ourShader.setVec3f("center", center);
-//            ourShader.setFloat("offset", 0.5);
-//            glUseProgram(shaderProgram);
-            //使用指定的着色器，在后面的每个着色器调用和渲染调用都会使用这个着色程序
+            projection = glm::perspective(glm::radians(fov), (float)SCR_WIDTH/(float)SCR_HEIGHT, 0.1f, 100.0f);
+            ourShader.setMat4fv("projection", glm::value_ptr(projection));
             
             glBindVertexArray(VAO);
-            
 //            glDrawArrays(GL_TRIANGLES, 0, 3);
             //第一个参数：绘制图元
             //第二个参数：顶点数组的其实索引
             //第三个参数：需要绘制的顶点个数
+            
+            for (unsigned int i = 0; i < 10; i++) {
+                float angle = 20 + 20.0f * i;
+                if (i % 3 == 0) {
+                    angle *= glfwGetTime();
+                }
+                glDrawArrays(GL_TRIANGLES, 0, 36);
+                
+                glm::mat4 model = glm::mat4(1.0f);
+                model = glm::translate(model, cubePositions[i]);
+                model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+                ourShader.setMat4fv("model", glm::value_ptr(model));
+            }
 
-            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+//            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
             //第一个参数：指定绘制模式
             //第二个参数：索引的顶点个数
             //第三个参数：索引的类型
             //第四个参数：EBO中的偏移量
-            glm::vec3 vec = glm::vec3(1.0f, 1.0f, 1.0f);
-            vec *= sin(glfwGetTime());
-            glm::mat4 trans1 = glm::mat4(1.0f);
-            //先按顺时针旋转，再平移到vec3(0.5f, -0.5f, 0.0f))
-            trans1 = glm::translate(trans1, glm::vec3(-0.5f, -0.5f, 0.0f));
-            trans1 = glm::scale(trans1, vec);
-            ourShader.setMat4fv("transform", glm::value_ptr(trans1));
-            glBindVertexArray(VAO);
-            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
             
             glBindVertexArray(0);
             
