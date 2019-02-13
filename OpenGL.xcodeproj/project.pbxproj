@@ -15,7 +15,7 @@
 		E87F4D2E21AD7F7A00402370 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E87F4D2D21AD7F7A00402370 /* GLUT.framework */; };
 		E87F4D3021AD7F8100402370 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E87F4D2F21AD7F8100402370 /* CoreVideo.framework */; };
 		E87F4D3221AD7F8800402370 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E87F4D3121AD7F8800402370 /* IOKit.framework */; };
-		E8A80E8021F0D25B00F4C528 /* 2.2.basic_lighting_specular.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8A80E7F21F0D25B00F4C528 /* 2.2.basic_lighting_specular.mm */; };
+		E8A80E8021F0D25B00F4C528 /* 6.multiple_lights.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8A80E7F21F0D25B00F4C528 /* 6.multiple_lights.mm */; };
 		E8A80E8521F0D2BB00F4C528 /* Shader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8A80E8121F0D2BA00F4C528 /* Shader.cpp */; };
 /* End PBXBuildFile section */
 
@@ -40,6 +40,7 @@
 		E816F91921AD868500A214B7 /* glfw3native.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glfw3native.h; sourceTree = "<group>"; };
 		E84D8608220695DF0081B328 /* light.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = light.fs; sourceTree = "<group>"; };
 		E84D8609220695E00081B328 /* light.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = light.vs; sourceTree = "<group>"; };
+		E84D860C221309B20081B328 /* lighting_maps_specular_color.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lighting_maps_specular_color.png; sourceTree = "<group>"; };
 		E86C9B80220098DA00DBEE7B /* Camera.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Camera.cpp; sourceTree = "<group>"; };
 		E86C9B81220098DA00DBEE7B /* Camera.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Camera.hpp; sourceTree = "<group>"; };
 		E87F4CE321AD772F00402370 /* OpenGL */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = OpenGL; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -146,7 +147,7 @@
 		E8A80E7C21F0BD7E00F4C528 /* cyborg_specular.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cyborg_specular.png; sourceTree = "<group>"; };
 		E8A80E7D21F0BD7E00F4C528 /* cyborg.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cyborg.mtl; sourceTree = "<group>"; };
 		E8A80E7E21F0BD7E00F4C528 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
-		E8A80E7F21F0D25B00F4C528 /* 2.2.basic_lighting_specular.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = 2.2.basic_lighting_specular.mm; sourceTree = "<group>"; };
+		E8A80E7F21F0D25B00F4C528 /* 6.multiple_lights.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = 6.multiple_lights.mm; sourceTree = "<group>"; };
 		E8A80E8121F0D2BA00F4C528 /* Shader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Shader.cpp; sourceTree = "<group>"; };
 		E8A80E8221F0D2BA00F4C528 /* Shader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Shader.hpp; sourceTree = "<group>"; };
 		E8A80E8321F0D2BA00F4C528 /* shader.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = shader.vs; sourceTree = "<group>"; };
@@ -226,7 +227,7 @@
 		E87F4CE521AD772F00402370 /* OpenGL */ = {
 			isa = PBXGroup;
 			children = (
-				E8A80E7F21F0D25B00F4C528 /* 2.2.basic_lighting_specular.mm */,
+				E8A80E7F21F0D25B00F4C528 /* 6.multiple_lights.mm */,
 				E8A80E8221F0D2BA00F4C528 /* Shader.hpp */,
 				E8A80E8121F0D2BA00F4C528 /* Shader.cpp */,
 				E86C9B81220098DA00DBEE7B /* Camera.hpp */,
@@ -269,6 +270,7 @@
 		E8A80E1021F0BD7D00F4C528 /* textures */ = {
 			isa = PBXGroup;
 			children = (
+				E84D860C221309B20081B328 /* lighting_maps_specular_color.png */,
 				E8A80E1121F0BD7D00F4C528 /* container.jpg */,
 				E8A80E1221F0BD7D00F4C528 /* metal.png */,
 				E8A80E1321F0BD7D00F4C528 /* toy_box_disp.png */,
@@ -530,7 +532,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E86C9B82220098DA00DBEE7B /* Camera.cpp in Sources */,
-				E8A80E8021F0D25B00F4C528 /* 2.2.basic_lighting_specular.mm in Sources */,
+				E8A80E8021F0D25B00F4C528 /* 6.multiple_lights.mm in Sources */,
 				E8A80E8521F0D2BB00F4C528 /* Shader.cpp in Sources */,
 				E816F91B21AD868500A214B7 /* glad.c in Sources */,
 			);

@@ -7,8 +7,10 @@
 //
 #include <iostream>
 #include <cmath>
+
 #include <glad/glad.h>
 #include "GLFW/glfw3.h"
+
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
@@ -20,6 +22,7 @@
 
 #include "Shader.hpp"
 #include "Camera.hpp"
+
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
@@ -44,7 +47,7 @@ float lastY = SCR_HEIGHT / 2.0f;
 float pitch = 0.0f;
 float yaw = 0.0f;
 
-float shininess = 100.0f;
+float shininess = 32.0f;
 float specularStrength = 0.5f;
 
 bool firstMouse = true;
@@ -55,6 +58,38 @@ glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
+unsigned int loadTexture(char const * path)
+{
+    unsigned int textureID;
+    glGenTextures(1, &textureID);
+    
+    int width, height, nrComponents;
+    unsigned char *data = stbi_load(path, &width, &height, &nrComponents, 0);
+    if (data) {
+        GLenum format;
+        if (nrComponents == 1) {
+            format = GL_RED;
+        } else if (nrComponents == 3) {
+            format = GL_RGB;
+        } else if (nrComponents == 4) {
+            format = GL_RGBA;
+        }
+        glBindTexture(GL_TEXTURE_2D, textureID);
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+        
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINE);
+        
+        stbi_image_free(data);
+    } else {
+        std::cout << "Texture failed to load at path: " << path << std::endl;
+        stbi_image_free(data);
+    }
+    return textureID;
+}
 //窗口大小改变的回调
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
@@ -143,92 +178,49 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
 }
 
 float vertices[] = {
-    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-    0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-    0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-    0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+    // positions          // normals           // texture coords
+    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
+    0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 0.0f,
+    0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
+    0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
     
-    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-    0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-    0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-    0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
+    0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 0.0f,
+    0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
+    0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
     
-    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-    -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-    -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
     
-    0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-    0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-    0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-    0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-    0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-    0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+    0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+    0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
+    0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+    0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+    0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
+    0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
     
-    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-    0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-    0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-    0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
+    0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f,
+    0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
+    0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
     
-    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-    0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-    0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-    0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f,
+    0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 1.0f,
+    0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
+    0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
 };
-
-//float vertices[] = {
-//    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-//    0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-//    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-//    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-//    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-//    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-//
-//    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-//    0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-//    0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-//    0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-//    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-//    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-//
-//    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-//    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-//    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-//    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-//    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-//    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-//
-//    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-//    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-//    0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-//    0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-//    0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-//    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-//
-//    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-//    0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-//    0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-//    0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-//    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-//    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-//
-//    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-//    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-//    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-//    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-//    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-//    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-//};
 
 unsigned int indices[] = {
     0, 2, 1,
@@ -279,43 +271,49 @@ int main(int argc, const char * argv[]) {
         
         stbi_set_flip_vertically_on_load(true);
         
-        unsigned int texture1, texture2;
-        glGenTextures(1, &texture1);
-        glBindTexture(GL_TEXTURE_2D, texture1);
+//        unsigned int texture1, texture2;
+//        glGenTextures(1, &texture1);
+//        glBindTexture(GL_TEXTURE_2D, texture1);
+        unsigned int diffuseMap = loadTexture("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/resources/textures/container2.png");
+        unsigned int specularMap = loadTexture("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/resources/textures/container2_specular.png");
+//        glGenTextures(1, &diffuseMap);
+//        glBindTexture(GL_TEXTURE_2D, diffuseMap);
+//
+//
+//
+//        int width, height, nrChannels;
+//        unsigned char *data1 = stbi_load("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/resources/textures/container2.png", &width, &height, &nrChannels, 0);
+//
+//        if (data1) {
+//            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data1);
+//            glGenerateMipmap(GL_TEXTURE_2D);
+//
+//            //为当前绑定的纹理对象设置环绕、过滤方式
+//            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+//            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+//            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+//            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+//        } else {
+//            std::cout << "Failed to load texture" << std::endl;
+//        }
+//        stbi_image_free(data1);
         
-        //为当前绑定的纹理对象设置环绕、过滤方式
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        
-        int width, height, nrChannels;
-        unsigned char *data1 = stbi_load("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/resources/textures/container.jpg", &width, &height, &nrChannels, 0);
-        
-        if (data1) {
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data1);
-            glGenerateMipmap(GL_TEXTURE_2D);
-        } else {
-            std::cout << "Failed to load texture" << std::endl;
-        }
-        stbi_image_free(data1);
-        
-        glGenTextures(1, &texture2);
-        glBindTexture(GL_TEXTURE_2D, texture2);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        
-        unsigned char *data2 = stbi_load("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/resources/textures/awesomeface.png", &width, &height, &nrChannels, 0);
-        
-        if (data2) {
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data2);
-            glGenerateMipmap(GL_TEXTURE_2D);
-        } else {
-            std::cout << "Failed to load texture" << std::endl;
-        }
-        stbi_image_free(data2);
+//        glGenTextures(1, &texture2);
+//        glBindTexture(GL_TEXTURE_2D, texture2);
+//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+//
+//        unsigned char *data2 = stbi_load("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/resources/textures/awesomeface.png", &width, &height, &nrChannels, 0);
+//
+//        if (data2) {
+//            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data2);
+//            glGenerateMipmap(GL_TEXTURE_2D);
+//        } else {
+//            std::cout << "Failed to load texture" << std::endl;
+//        }
+//        stbi_image_free(data2);
         
         //创建VAO
         unsigned int VAO, VBO, EBO;
@@ -346,7 +344,7 @@ int main(int argc, const char * argv[]) {
         //GL_STREAM_DRAW：数据每次绘制都会改变
         
         //设置顶点属性指针
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
         //第一个参数：顶点属性，与vertex shader中的location = 0对应
         //第二个参数：每一个顶点属性的分量个数
         //第三个参数：每个分量的类型
@@ -355,8 +353,11 @@ int main(int argc, const char * argv[]) {
         //第六个参数：位置数据在缓冲中起始位置的偏移量
         glEnableVertexAttribArray(0);
         
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
         glEnableVertexAttribArray(1);
+        
+        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
+        glEnableVertexAttribArray(2);
         
 //        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
 //        glEnableVertexAttribArray(2);
@@ -368,12 +369,14 @@ int main(int argc, const char * argv[]) {
         glGenVertexArrays(1, &lightVAO);
         glBindVertexArray(lightVAO);
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
         
         ourShader.use();
-        ourShader.setInt("texture1", 0);
-        ourShader.setInt("texture2", 1);
+//        ourShader.setInt("texture1", 0);
+//        ourShader.setInt("texture2", 1);
+        ourShader.setInt("material.diffuse", 0);
+        ourShader.setInt("material.specular", 1);
         
         glm::vec3 objectColor = glm::vec3(1.0f, 0.5f, 0.31f);
         glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -435,7 +438,7 @@ int main(int argc, const char * argv[]) {
         lightShader.setMat4fv("model", glm::value_ptr(lightModel));
         
         ourShader.use();
-        ourShader.setVec3f("lightPos", glm::value_ptr(lightPos));
+        ourShader.setVec3f("light.position", glm::value_ptr(lightPos));
         
         glEnable(GL_DEPTH_TEST);
         //使用while循环来不断的渲染画面，我们称之为渲染循环（Render Loop）
@@ -450,16 +453,22 @@ int main(int argc, const char * argv[]) {
             
             //渲染指令
             //glClearColor是一个状态设置函数，清除屏幕颜色为（0.2，0.3，0.3，1.0）
-            glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+            glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
             
             //glClear是一个状态使用函数，清除深度缓冲
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             
+//            glActiveTexture(GL_TEXTURE0);
+//            glBindTexture(GL_TEXTURE_2D, texture1);
+//
+//            glActiveTexture(GL_TEXTURE1);
+//            glBindTexture(GL_TEXTURE_2D, texture2);
+            
             glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, texture1);
+            glBindTexture(GL_TEXTURE_2D, diffuseMap);
             
             glActiveTexture(GL_TEXTURE1);
-            glBindTexture(GL_TEXTURE_2D, texture2);
+            glBindTexture(GL_TEXTURE_2D, specularMap);
 
             ourShader.use();
             ourShader.setFloat("mixValue", mixValue);
@@ -499,9 +508,28 @@ int main(int argc, const char * argv[]) {
                 ourShader.setMat4fv("normal", glm::value_ptr(model));
             }
             
+            glm::vec3 specular = glm::vec3(0.5f);
+            glm::vec3 diffuse = glm::vec3(1.0f, 0.5f, 0.31f);
+            glm::vec3 ambient = glm::vec3(1.0f, 0.5f ,0.31f);
+            
+            glm::vec3 lightColor = glm::vec3(1.0);
+//            lightColor.x = sin(glfwGetTime() * 2.0f);
+//            lightColor.y = sin(glfwGetTime() * 0.7f);
+//            lightColor.z = sin(glfwGetTime() * 1.3f);
+            
+            glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
+            glm::vec3 ambientColor = lightColor * glm::vec3(0.2f);
+            
+            glm::vec3 lightSpecular = glm::vec3(1.0f);
+            glm::vec3 lightDiffuse = glm::vec3(0.5f);
+            glm::vec3 lightAmbient = glm::vec3(0.2f);
+            
             ourShader.setVec3f("viewPos", glm::value_ptr(camera.Position));
-            ourShader.setFloat("shininess", shininess);
-            ourShader.setFloat("specularStrength", specularStrength);
+            ourShader.setFloat("material.shininess", shininess);
+            
+            ourShader.setVec3f("light.specular", glm::value_ptr(lightSpecular));
+            ourShader.setVec3f("light.diffuse", glm::value_ptr(lightDiffuse));
+            ourShader.setVec3f("light.ambient", glm::value_ptr(lightAmbient));
 
 //            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
             //第一个参数：指定绘制模式
