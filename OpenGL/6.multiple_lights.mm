@@ -9,11 +9,14 @@
 #include <cmath>
 
 #include <glad/glad.h>
-#include "GLFW/glfw3.h"
+#include <GLFW/glfw3.h>
 
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
+//#include "assimp/scene.h"
+//#include "assimp/postprocess.h"
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <vector>
 
@@ -66,7 +69,7 @@ unsigned int loadTexture(char const * path)
     int width, height, nrComponents;
     unsigned char *data = stbi_load(path, &width, &height, &nrComponents, 0);
     if (data) {
-        GLenum format;
+        GLenum format = GL_RGB;
         if (nrComponents == 1) {
             format = GL_RED;
         } else if (nrComponents == 3) {
@@ -74,6 +77,7 @@ unsigned int loadTexture(char const * path)
         } else if (nrComponents == 4) {
             format = GL_RGBA;
         }
+        
         glBindTexture(GL_TEXTURE_2D, textureID);
         glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
@@ -147,14 +151,17 @@ void processInput(GLFWwindow *window)
     }
     
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.ProcessKeyboard(FORWARD, deltaTime);
+        camera.keyboardMove(MoveDirectionForward, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.ProcessKeyboard(BACKWARD, deltaTime);
-    
+        camera.keyboardMove(MoveDirectionBackwrad, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-         camera.ProcessKeyboard(LEFT, deltaTime);
+         camera.keyboardMove(MoveDirectionLeft, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboard(RIGHT, deltaTime);
+        camera.keyboardMove(MoveDirectionRight, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+        camera.keyboardMove(MoveDirectionUp, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+        camera.keyboardMove(MoveDirectionDown, deltaTime);
 }
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
@@ -170,11 +177,11 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
     lastX = xpos;
     lastY = ypos;
     
-    camera.ProcessMouseMovement(xoffset, yoffset);
+    camera.mouseMove(xoffset, yoffset);
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-    camera.ProcessMouseScroll(yoffset);
+    camera.mouseScroll(yoffset);
 }
 
 float vertices[] = {
@@ -266,17 +273,17 @@ int main(int argc, const char * argv[]) {
         glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
         std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;
         
-        Shader ourShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/shader.vs", "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/shader.fs");
-        Shader lightShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/light.vs", "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/light.fs");
+        Shader ourShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/shader.vs", "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/shader.fs");
+        Shader lightShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/light.vs", "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/light.fs");
         
         stbi_set_flip_vertically_on_load(true);
         
 //        unsigned int texture1, texture2;
 //        glGenTextures(1, &texture1);
 //        glBindTexture(GL_TEXTURE_2D, texture1);
-        unsigned int diffuseMap = loadTexture("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/resources/textures/container2.png");
-        unsigned int specularMap = loadTexture("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/resources/textures/container2_specular.png");
-        unsigned int emissionMap = loadTexture("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/resources/textures/matrix.jpg");
+        unsigned int diffuseMap = loadTexture("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/container2.png");
+        unsigned int specularMap = loadTexture("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/container2_specular.png");
+        unsigned int emissionMap = loadTexture("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/matrix.jpg");
 //        unsigned int specularMap = loadTexture("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/resources/textures/lighting_maps_specular_color.png");
 //        glGenTextures(1, &diffuseMap);
 //        glBindTexture(GL_TEXTURE_2D, diffuseMap);
@@ -486,7 +493,7 @@ int main(int argc, const char * argv[]) {
             ourShader.use();
             ourShader.setFloat("mixValue", mixValue);
             
-            glm::mat4 view = camera.GetViewMatrix();
+            glm::mat4 view = camera.viewMatrix();
             ourShader.setMat4fv("view", glm::value_ptr(view));
             
             projection = glm::perspective(glm::radians(fov), (float)SCR_WIDTH/(float)SCR_HEIGHT, 0.1f, 100.0f);
@@ -517,8 +524,9 @@ int main(int argc, const char * argv[]) {
                 model = glm::transpose(model);  //转置矩阵
                 ourShader.setMat4fv("normal", glm::value_ptr(model));
             }
-            
-            ourShader.setVec3f("viewPos", glm::value_ptr(camera.Position));
+
+            glm::vec3 cameraPostion = camera.position();
+            ourShader.setVec3f("viewPos", glm::value_ptr(cameraPostion));
             ourShader.setFloat("material.shininess", shininess);
             
             // directional light
@@ -558,9 +566,11 @@ int main(int argc, const char * argv[]) {
             ourShader.setFloat("pointLights[3].constant", 1.0f);
             ourShader.setFloat("pointLights[3].linear", 0.09);
             ourShader.setFloat("pointLights[3].quadratic", 0.032);
+            
+            glm::vec3 cameraFront = camera.front();
             // spotLight
-            ourShader.setVec3f("spotLight.position", glm::value_ptr(camera.Position));
-            ourShader.setVec3f("spotLight.direction", glm::value_ptr(camera.Front));
+            ourShader.setVec3f("spotLight.position", glm::value_ptr(cameraPostion));
+            ourShader.setVec3f("spotLight.direction", glm::value_ptr(cameraFront));
             ourShader.setVec3f("spotLight.ambient", 0.0f, 0.0f, 0.0f);
             ourShader.setVec3f("spotLight.diffuse", 0.0f, 1.0f, 0.0f);
             ourShader.setVec3f("spotLight.specular", 1.0f, 1.0f, 1.0f);
