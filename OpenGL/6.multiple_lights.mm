@@ -381,7 +381,6 @@ int main(int argc, const char * argv[]) {
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
         
-        ourShader.use();
 //        ourShader.setInt("texture1", 0);
 //        ourShader.setInt("texture2", 1);
         ourShader.setInt("material.diffuse", 0);
@@ -391,12 +390,11 @@ int main(int argc, const char * argv[]) {
         glm::vec3 objectColor = glm::vec3(1.0f, 0.5f, 0.31f);
         glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
         
-        ourShader.setVec3f("objectColor", glm::value_ptr(objectColor));
-        ourShader.setVec3f("lightColor", glm::value_ptr(lightColor));
+        ourShader.setVec3f("objectColor", objectColor);
+        ourShader.setVec3f("lightColor", lightColor);
         
-        lightShader.use();
-        lightShader.setVec3f("objectColor", glm::value_ptr(objectColor));
-        lightShader.setVec3f("lightColor", glm::value_ptr(lightColor));
+        lightShader.setVec3f("objectColor", objectColor);
+        lightShader.setVec3f("lightColor", lightColor);
         
         //模型矩阵，从模型坐标系转换到世界坐标系
         glm::mat4 model = glm::mat4(1.0f);
@@ -448,14 +446,12 @@ int main(int argc, const char * argv[]) {
         
         glm::vec3 lightPos = glm::vec3(1.2f, 1.0f, 2.0f);
         
-        lightShader.use();
         glm::mat4 lightModel = glm::mat4(1.0);
         lightModel = glm::translate(lightModel, lightPos);
         lightModel = glm::scale(lightModel, glm::vec3(0.2f));
-        lightShader.setMat4fv("model", glm::value_ptr(lightModel));
+        lightShader.setMat4fv("model", lightModel);
         
-        ourShader.use();
-        ourShader.setVec3f("light.position", glm::value_ptr(lightPos));
+        ourShader.setVec3f("light.position", lightPos);
         
         glEnable(GL_DEPTH_TEST);
         //使用while循环来不断的渲染画面，我们称之为渲染循环（Render Loop）
@@ -526,7 +522,7 @@ int main(int argc, const char * argv[]) {
             }
 
             glm::vec3 cameraPostion = camera.position();
-            ourShader.setVec3f("viewPos", glm::value_ptr(cameraPostion));
+            ourShader.setVec3f("viewPos", cameraPostion);
             ourShader.setFloat("material.shininess", shininess);
             
             // directional light
@@ -535,7 +531,7 @@ int main(int argc, const char * argv[]) {
             ourShader.setVec3f("dirLight.diffuse", 1.0f, 0.0f, 0.0f);
             ourShader.setVec3f("dirLight.specular", 0.5f, 0.5f, 0.5f);
             // point light 1
-            ourShader.setVec3f("pointLights[0].position", glm::value_ptr(pointLightPositions[0]));
+            ourShader.setVec3f("pointLights[0].position", pointLightPositions[0]);
             ourShader.setVec3f("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
             ourShader.setVec3f("pointLights[0].diffuse", 0.0f, 0.0f, 1.0f);
             ourShader.setVec3f("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
@@ -543,7 +539,7 @@ int main(int argc, const char * argv[]) {
             ourShader.setFloat("pointLights[0].linear", 0.09);
             ourShader.setFloat("pointLights[0].quadratic", 0.032);
             // point light 2
-            ourShader.setVec3f("pointLights[1].position", glm::value_ptr(pointLightPositions[1]));
+            ourShader.setVec3f("pointLights[1].position", pointLightPositions[1]);
             ourShader.setVec3f("pointLights[1].ambient", 0.05f, 0.05f, 0.05f);
             ourShader.setVec3f("pointLights[1].diffuse", 0.0f, 0.0f, 1.0f);
             ourShader.setVec3f("pointLights[1].specular", 1.0f, 1.0f, 1.0f);
@@ -551,7 +547,7 @@ int main(int argc, const char * argv[]) {
             ourShader.setFloat("pointLights[1].linear", 0.09);
             ourShader.setFloat("pointLights[1].quadratic", 0.032);
             // point light 3
-            ourShader.setVec3f("pointLights[2].position", glm::value_ptr(pointLightPositions[2]));
+            ourShader.setVec3f("pointLights[2].position", pointLightPositions[2]);
             ourShader.setVec3f("pointLights[2].ambient", 0.05f, 0.05f, 0.05f);
             ourShader.setVec3f("pointLights[2].diffuse", 0.0f, 0.0f, 1.0f);
             ourShader.setVec3f("pointLights[2].specular", 1.0f, 1.0f, 1.0f);
@@ -559,7 +555,7 @@ int main(int argc, const char * argv[]) {
             ourShader.setFloat("pointLights[2].linear", 0.09);
             ourShader.setFloat("pointLights[2].quadratic", 0.032);
             // point light 4
-            ourShader.setVec3f("pointLights[3].position", glm::value_ptr(pointLightPositions[3]));
+            ourShader.setVec3f("pointLights[3].position", pointLightPositions[3]);
             ourShader.setVec3f("pointLights[3].ambient", 0.05f, 0.05f, 0.05f);
             ourShader.setVec3f("pointLights[3].diffuse", 0.0f, 0.0f, 1.0f);
             ourShader.setVec3f("pointLights[3].specular", 1.0f, 1.0f, 1.0f);
@@ -569,8 +565,8 @@ int main(int argc, const char * argv[]) {
             
             glm::vec3 cameraFront = camera.front();
             // spotLight
-            ourShader.setVec3f("spotLight.position", glm::value_ptr(cameraPostion));
-            ourShader.setVec3f("spotLight.direction", glm::value_ptr(cameraFront));
+            ourShader.setVec3f("spotLight.position", cameraPostion);
+            ourShader.setVec3f("spotLight.direction", cameraFront);
             ourShader.setVec3f("spotLight.ambient", 0.0f, 0.0f, 0.0f);
             ourShader.setVec3f("spotLight.diffuse", 0.0f, 1.0f, 0.0f);
             ourShader.setVec3f("spotLight.specular", 1.0f, 1.0f, 1.0f);
