@@ -11,6 +11,7 @@
 		E84D878E221C58C50081B328 /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E84D8785221C58C40081B328 /* Camera.cpp */; };
 		E84D878F221C58C50081B328 /* glad.c in Sources */ = {isa = PBXBuildFile; fileRef = E84D8788221C58C40081B328 /* glad.c */; };
 		E84D8790221C58C50081B328 /* Shader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E84D878C221C58C40081B328 /* Shader.cpp */; };
+		E84D8794221EDF1D0081B328 /* Texture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E84D8792221EDF1D0081B328 /* Texture.cpp */; };
 		E87F4D2A21AD7F6D00402370 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E87F4D2921AD7F6D00402370 /* Cocoa.framework */; };
 		E87F4D2C21AD7F7400402370 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E87F4D2B21AD7F7400402370 /* OpenGL.framework */; };
 		E87F4D2E21AD7F7A00402370 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E87F4D2D21AD7F7A00402370 /* GLUT.framework */; };
@@ -141,6 +142,8 @@
 		E84D878A221C58C40081B328 /* stb_image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stb_image.h; sourceTree = "<group>"; };
 		E84D878C221C58C40081B328 /* Shader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Shader.cpp; sourceTree = "<group>"; };
 		E84D878D221C58C40081B328 /* Shader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Shader.hpp; sourceTree = "<group>"; };
+		E84D8792221EDF1D0081B328 /* Texture.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Texture.cpp; sourceTree = "<group>"; };
+		E84D8793221EDF1D0081B328 /* Texture.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Texture.hpp; sourceTree = "<group>"; };
 		E87F4CE321AD772F00402370 /* OpenGL */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = OpenGL; sourceTree = BUILT_PRODUCTS_DIR; };
 		E87F4D2921AD7F6D00402370 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		E87F4D2B21AD7F7400402370 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
@@ -398,6 +401,7 @@
 		E84D8783221C58C40081B328 /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				E84D8791221EDEF80081B328 /* Texture */,
 				E84D8784221C58C40081B328 /* Camera */,
 				E84D8787221C58C40081B328 /* Glad */,
 				E84D8789221C58C40081B328 /* StbImage */,
@@ -438,6 +442,15 @@
 				E84D878D221C58C40081B328 /* Shader.hpp */,
 			);
 			path = Shader;
+			sourceTree = "<group>";
+		};
+		E84D8791221EDEF80081B328 /* Texture */ = {
+			isa = PBXGroup;
+			children = (
+				E84D8792221EDF1D0081B328 /* Texture.cpp */,
+				E84D8793221EDF1D0081B328 /* Texture.hpp */,
+			);
+			path = Texture;
 			sourceTree = "<group>";
 		};
 		E87F4CDA21AD772F00402370 = {
@@ -537,6 +550,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E84D8794221EDF1D0081B328 /* Texture.cpp in Sources */,
 				E84D878E221C58C50081B328 /* Camera.cpp in Sources */,
 				E8A80E8021F0D25B00F4C528 /* 6.multiple_lights.mm in Sources */,
 				E84D8790221C58C50081B328 /* Shader.cpp in Sources */,

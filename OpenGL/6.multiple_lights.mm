@@ -20,11 +20,9 @@
 
 #include <vector>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-
 #include "Shader.hpp"
 #include "Camera.hpp"
+#include "Texture.hpp"
 
 
 const unsigned int SCR_WIDTH = 800;
@@ -61,39 +59,6 @@ glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
-unsigned int loadTexture(char const * path)
-{
-    unsigned int textureID;
-    glGenTextures(1, &textureID);
-    
-    int width, height, nrComponents;
-    unsigned char *data = stbi_load(path, &width, &height, &nrComponents, 0);
-    if (data) {
-        GLenum format = GL_RGB;
-        if (nrComponents == 1) {
-            format = GL_RED;
-        } else if (nrComponents == 3) {
-            format = GL_RGB;
-        } else if (nrComponents == 4) {
-            format = GL_RGBA;
-        }
-        
-        glBindTexture(GL_TEXTURE_2D, textureID);
-        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-        
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINE);
-        
-        stbi_image_free(data);
-    } else {
-        std::cout << "Texture failed to load at path: " << path << std::endl;
-        stbi_image_free(data);
-    }
-    return textureID;
-}
 //窗口大小改变的回调
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
@@ -275,55 +240,11 @@ int main(int argc, const char * argv[]) {
         
         Shader ourShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/shader.vs", "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/shader.fs");
         Shader lightShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/light.vs", "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/light.fs");
-        
-        stbi_set_flip_vertically_on_load(true);
-        
-//        unsigned int texture1, texture2;
-//        glGenTextures(1, &texture1);
-//        glBindTexture(GL_TEXTURE_2D, texture1);
-        unsigned int diffuseMap = loadTexture("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/container2.png");
-        unsigned int specularMap = loadTexture("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/container2_specular.png");
-        unsigned int emissionMap = loadTexture("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/matrix.jpg");
-//        unsigned int specularMap = loadTexture("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/resources/textures/lighting_maps_specular_color.png");
-//        glGenTextures(1, &diffuseMap);
-//        glBindTexture(GL_TEXTURE_2D, diffuseMap);
-//
-//
-//
-//        int width, height, nrChannels;
-//        unsigned char *data1 = stbi_load("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/resources/textures/container2.png", &width, &height, &nrChannels, 0);
-//
-//        if (data1) {
-//            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data1);
-//            glGenerateMipmap(GL_TEXTURE_2D);
-//
-//            //为当前绑定的纹理对象设置环绕、过滤方式
-//            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-//            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-//            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-//            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-//        } else {
-//            std::cout << "Failed to load texture" << std::endl;
-//        }
-//        stbi_image_free(data1);
-        
-//        glGenTextures(1, &texture2);
-//        glBindTexture(GL_TEXTURE_2D, texture2);
-//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-//
-//        unsigned char *data2 = stbi_load("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/resources/textures/awesomeface.png", &width, &height, &nrChannels, 0);
-//
-//        if (data2) {
-//            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data2);
-//            glGenerateMipmap(GL_TEXTURE_2D);
-//        } else {
-//            std::cout << "Failed to load texture" << std::endl;
-//        }
-//        stbi_image_free(data2);
-        
+
+        Texture diffuseMap("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/container2.png");
+        Texture specularMap("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/container2_specular.png");
+        Texture emissionMap("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/matrix.jpg");
+
         //创建VAO
         unsigned int VAO, VBO, EBO;
         glGenVertexArrays(1, &VAO);
@@ -476,15 +397,10 @@ int main(int argc, const char * argv[]) {
 //
 //            glActiveTexture(GL_TEXTURE1);
 //            glBindTexture(GL_TEXTURE_2D, texture2);
-            
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, diffuseMap);
-            
-            glActiveTexture(GL_TEXTURE1);
-            glBindTexture(GL_TEXTURE_2D, specularMap);
-            
-            glActiveTexture(GL_TEXTURE2);
-            glBindTexture(GL_TEXTURE_2D, emissionMap);
+
+            diffuseMap.use(GL_TEXTURE0);
+            specularMap.use(GL_TEXTURE1);
+            emissionMap.use(GL_TEXTURE2);
 
             ourShader.use();
             ourShader.setFloat("mixValue", mixValue);
