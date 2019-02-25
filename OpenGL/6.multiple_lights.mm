@@ -24,6 +24,10 @@
 #include "Camera.hpp"
 #include "Texture.hpp"
 
+#include "DirectionLight.hpp"
+#include "PointLight.hpp"
+#include "Spotlight.hpp"
+
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
@@ -238,12 +242,21 @@ int main(int argc, const char * argv[]) {
         glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
         std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;
         
-        Shader ourShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/shader.vs", "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/shader.fs");
+        Shader objectShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/shader.vs", "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/shader.fs");
         Shader lightShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/light.vs", "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/light.fs");
 
         Texture diffuseMap("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/container2.png");
         Texture specularMap("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/container2_specular.png");
         Texture emissionMap("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/matrix.jpg");
+        
+        DirectionLight directionLight(objectShader, "directionLight");
+        
+        PointLight pointLight1(objectShader, "pointLight[0]");
+        PointLight pointLight2(objectShader, "pointLight[1]");
+        PointLight pointLight3(objectShader, "pointLight[2]");
+        PointLight pointLight4(objectShader, "pointLight[3]");
+        
+        Spotlight spotlight(objectShader, "spotlight");
 
         //创建VAO
         unsigned int VAO, VBO, EBO;
@@ -253,7 +266,6 @@ int main(int argc, const char * argv[]) {
         
         //绑定VAO
         glBindVertexArray(VAO);
-        
         //生成buffer来存顶点，叫VBO
         //把VBO绑定到GL_ARRAY_BUFFER目标上
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -304,18 +316,9 @@ int main(int argc, const char * argv[]) {
         
 //        ourShader.setInt("texture1", 0);
 //        ourShader.setInt("texture2", 1);
-        ourShader.setInt("material.diffuse", 0);
-        ourShader.setInt("material.specular", 1);
-        ourShader.setInt("material.emission", 2);
-        
-        glm::vec3 objectColor = glm::vec3(1.0f, 0.5f, 0.31f);
-        glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
-        
-        ourShader.setVec3f("objectColor", objectColor);
-        ourShader.setVec3f("lightColor", lightColor);
-        
-        lightShader.setVec3f("objectColor", objectColor);
-        lightShader.setVec3f("lightColor", lightColor);
+        objectShader.setInt("material.diffuse", 0);
+        objectShader.setInt("material.specular", 1);
+        objectShader.setInt("material.emission", 2);
         
         //模型矩阵，从模型坐标系转换到世界坐标系
         glm::mat4 model = glm::mat4(1.0f);
@@ -360,20 +363,12 @@ int main(int argc, const char * argv[]) {
         };
         
         model = glm::rotate(model, glm::radians(0.05f), glm::vec3(0.5f, 1.0f, 0.0f));
+        glm::mat4 view = camera.viewMatrix();
         
-        ourShader.setMat4fv("model", glm::value_ptr(model));
-//        ourShader.setMat4fv("view", glm::value_ptr(view));
-        ourShader.setMat4fv("projection", glm::value_ptr(projection));
-        
-        glm::vec3 lightPos = glm::vec3(1.2f, 1.0f, 2.0f);
-        
-        glm::mat4 lightModel = glm::mat4(1.0);
-        lightModel = glm::translate(lightModel, lightPos);
-        lightModel = glm::scale(lightModel, glm::vec3(0.2f));
-        lightShader.setMat4fv("model", lightModel);
-        
-        ourShader.setVec3f("light.position", lightPos);
-        
+        objectShader.setMat4fv("model", glm::value_ptr(model));
+        objectShader.setMat4fv("view", glm::value_ptr(view));
+        objectShader.setMat4fv("projection", glm::value_ptr(projection));
+ 
         glEnable(GL_DEPTH_TEST);
         //使用while循环来不断的渲染画面，我们称之为渲染循环（Render Loop）
         //没次循环开始之前检查一次GLFW是否被要求退出
@@ -402,14 +397,14 @@ int main(int argc, const char * argv[]) {
             specularMap.use(GL_TEXTURE1);
             emissionMap.use(GL_TEXTURE2);
 
-            ourShader.use();
-            ourShader.setFloat("mixValue", mixValue);
+            objectShader.use();
+            objectShader.setFloat("mixValue", mixValue);
             
             glm::mat4 view = camera.viewMatrix();
-            ourShader.setMat4fv("view", glm::value_ptr(view));
+            objectShader.setMat4fv("view", glm::value_ptr(view));
             
             projection = glm::perspective(glm::radians(fov), (float)SCR_WIDTH/(float)SCR_HEIGHT, 0.1f, 100.0f);
-            ourShader.setMat4fv("projection", glm::value_ptr(projection));
+            objectShader.setMat4fv("projection", glm::value_ptr(projection));
             
             glBindVertexArray(VAO);
             
@@ -418,7 +413,7 @@ int main(int argc, const char * argv[]) {
             //第二个参数：顶点数组的其实索引
             //第三个参数：需要绘制的顶点个数
             
-            ourShader.use();
+            objectShader.use();
             for (unsigned int i = 0; i < 10; i++) {
                 float angle = 20 + 20.0f * i;
                 if (i % 3 == 0) {
@@ -429,68 +424,77 @@ int main(int argc, const char * argv[]) {
                 glm::mat4 model = glm::mat4(1.0f);
                 model = glm::translate(model, cubePositions[i]);
                 model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-                ourShader.setMat4fv("model", glm::value_ptr(model));
+                objectShader.setMat4fv("model", glm::value_ptr(model));
                 
                 //法线矩阵
                 model = glm::inverse(model);    //逆矩阵
                 model = glm::transpose(model);  //转置矩阵
-                ourShader.setMat4fv("normal", glm::value_ptr(model));
+                objectShader.setMat4fv("normal", glm::value_ptr(model));
             }
 
             glm::vec3 cameraPostion = camera.position();
-            ourShader.setVec3f("viewPos", cameraPostion);
-            ourShader.setFloat("material.shininess", shininess);
+            objectShader.setVec3f("viewPos", cameraPostion);
+            objectShader.setFloat("material.shininess", shininess);
             
             // directional light
-            ourShader.setVec3f("dirLight.direction", -0.2f, -1.0f, -0.3f);
-            ourShader.setVec3f("dirLight.ambient", 0.05f, 0.05f, 0.05f);
-            ourShader.setVec3f("dirLight.diffuse", 1.0f, 0.0f, 0.0f);
-            ourShader.setVec3f("dirLight.specular", 0.5f, 0.5f, 0.5f);
+            directionLight.setDirection(-0.2f, -1.0f, -0.3f);
+            directionLight.setAmbient(0.05f, 0.05f, 0.05f);
+            directionLight.setDiffuse(1.0f, 0.0f, 0.0f);
+            directionLight.setSpecular(0.5f, 0.5f, 0.5f);
+
             // point light 1
-            ourShader.setVec3f("pointLights[0].position", pointLightPositions[0]);
-            ourShader.setVec3f("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
-            ourShader.setVec3f("pointLights[0].diffuse", 0.0f, 0.0f, 1.0f);
-            ourShader.setVec3f("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
-            ourShader.setFloat("pointLights[0].constant", 1.0f);
-            ourShader.setFloat("pointLights[0].linear", 0.09);
-            ourShader.setFloat("pointLights[0].quadratic", 0.032);
+            pointLight1.setPosition(pointLightPositions[0]);
+            pointLight1.setAmbient(0.05f, 0.05f, 0.05f);
+            pointLight1.setDiffuse(0.0f, 0.0f, 1.0f);
+            pointLight1.setSpecular(1.0f, 1.0f, 1.0f);
+            
+            pointLight1.setConstant(1.0f);
+            pointLight1.setLinear(0.09f);
+            pointLight1.setQuadratic(0.032);
+            
             // point light 2
-            ourShader.setVec3f("pointLights[1].position", pointLightPositions[1]);
-            ourShader.setVec3f("pointLights[1].ambient", 0.05f, 0.05f, 0.05f);
-            ourShader.setVec3f("pointLights[1].diffuse", 0.0f, 0.0f, 1.0f);
-            ourShader.setVec3f("pointLights[1].specular", 1.0f, 1.0f, 1.0f);
-            ourShader.setFloat("pointLights[1].constant", 1.0f);
-            ourShader.setFloat("pointLights[1].linear", 0.09);
-            ourShader.setFloat("pointLights[1].quadratic", 0.032);
+            pointLight2.setPosition(pointLightPositions[1]);
+            pointLight2.setAmbient(0.05f, 0.05f, 0.05f);
+            pointLight2.setDiffuse(0.0f, 0.0f, 1.0f);
+            pointLight2.setSpecular(1.0f, 1.0f, 1.0f);
+            
+            pointLight2.setConstant(1.0f);
+            pointLight2.setLinear(0.09f);
+            pointLight2.setQuadratic(0.032);
+
             // point light 3
-            ourShader.setVec3f("pointLights[2].position", pointLightPositions[2]);
-            ourShader.setVec3f("pointLights[2].ambient", 0.05f, 0.05f, 0.05f);
-            ourShader.setVec3f("pointLights[2].diffuse", 0.0f, 0.0f, 1.0f);
-            ourShader.setVec3f("pointLights[2].specular", 1.0f, 1.0f, 1.0f);
-            ourShader.setFloat("pointLights[2].constant", 1.0f);
-            ourShader.setFloat("pointLights[2].linear", 0.09);
-            ourShader.setFloat("pointLights[2].quadratic", 0.032);
+            pointLight3.setPosition(pointLightPositions[2]);
+            pointLight3.setAmbient(0.05f, 0.05f, 0.05f);
+            pointLight3.setDiffuse(0.0f, 0.0f, 1.0f);
+            pointLight3.setSpecular(1.0f, 1.0f, 1.0f);
+            
+            pointLight3.setConstant(1.0f);
+            pointLight3.setLinear(0.09f);
+            pointLight3.setQuadratic(0.032);
             // point light 4
-            ourShader.setVec3f("pointLights[3].position", pointLightPositions[3]);
-            ourShader.setVec3f("pointLights[3].ambient", 0.05f, 0.05f, 0.05f);
-            ourShader.setVec3f("pointLights[3].diffuse", 0.0f, 0.0f, 1.0f);
-            ourShader.setVec3f("pointLights[3].specular", 1.0f, 1.0f, 1.0f);
-            ourShader.setFloat("pointLights[3].constant", 1.0f);
-            ourShader.setFloat("pointLights[3].linear", 0.09);
-            ourShader.setFloat("pointLights[3].quadratic", 0.032);
+            pointLight4.setPosition(pointLightPositions[3]);
+            pointLight4.setAmbient(0.05f, 0.05f, 0.05f);
+            pointLight4.setDiffuse(0.0f, 0.0f, 1.0f);
+            pointLight4.setSpecular(1.0f, 1.0f, 1.0f);
+            
+            pointLight4.setConstant(1.0f);
+            pointLight4.setLinear(0.09f);
+            pointLight4.setQuadratic(0.032);
             
             glm::vec3 cameraFront = camera.front();
             // spotLight
-            ourShader.setVec3f("spotLight.position", cameraPostion);
-            ourShader.setVec3f("spotLight.direction", cameraFront);
-            ourShader.setVec3f("spotLight.ambient", 0.0f, 0.0f, 0.0f);
-            ourShader.setVec3f("spotLight.diffuse", 0.0f, 1.0f, 0.0f);
-            ourShader.setVec3f("spotLight.specular", 1.0f, 1.0f, 1.0f);
-            ourShader.setFloat("spotLight.constant", 1.0f);
-            ourShader.setFloat("spotLight.linear", 0.007f);
-            ourShader.setFloat("spotLight.quadratic", 0.0002f);
-            ourShader.setFloat("spotLight.cutOff", glm::cos(glm::radians(5.5f)));
-            ourShader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(10.0f)));
+            spotlight.setPosition(cameraPostion);
+            spotlight.setDirection(cameraFront);
+            spotlight.setAmbient(0.0f, 0.0f, 0.0f);
+            spotlight.setDiffuse(0.0f, 1.0f, 0.0f);
+            spotlight.setSpecular(1.0f, 1.0f, 1.0f);
+            
+            spotlight.setConstant(1.0f);
+            spotlight.setLinear(0.0014f);
+            spotlight.setQuadratic(0.000007f);
+            
+            spotlight.setCutOff(glm::cos(glm::radians(5.5f)));
+            spotlight.setOuterCutOff(glm::cos(glm::radians(10.0f)));
             
 //            glm::vec3 lightDir = glm::vec3(-0.2f, -1.0f, -0.3f);
 //            ourShader.setVec3f("light.direction", glm::value_ptr(lightDir));
@@ -505,6 +509,9 @@ int main(int argc, const char * argv[]) {
             glBindVertexArray(lightVAO);
             
             lightShader.use();
+            glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
+            lightShader.setVec3f("lightColor", lightColor);
+            
             lightShader.setMat4fv("view", glm::value_ptr(view));
             lightShader.setMat4fv("projection", glm::value_ptr(projection));
             

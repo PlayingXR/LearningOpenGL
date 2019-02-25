@@ -8,7 +8,7 @@ struct Material {
     float shininess;
 };
 
-struct SpotLight {
+struct Spotlight {
     vec3 position;
     vec3 direction;
     
@@ -24,7 +24,7 @@ struct SpotLight {
     float outerCutOff;
 };
 
-struct DirLight {
+struct DirectionLight {
     vec3 direction;
     
     vec3 ambient;
@@ -53,12 +53,12 @@ uniform Material material;
 
 #define NR_POINT_LIGHTS 4
 uniform PointLight pointLights[NR_POINT_LIGHTS];
-uniform DirLight dirLight;
-uniform SpotLight spotLight;
+uniform DirectionLight directionLight;
+uniform Spotlight spotlight;
 
-vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);
+vec3 CalcDirectionLight(DirectionLight light, vec3 normal, vec3 viewDir);
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
-vec3 CalcSpotLight(SpotLight light, vec3 mormal, vec3 fragPos, vec3 viewDir);
+vec3 CalcSpotlight(Spotlight light, vec3 mormal, vec3 fragPos, vec3 viewDir);
 
 void main()
 {
@@ -66,7 +66,7 @@ void main()
     vec3 viewDir = normalize(viewPos - FragPos);
     
     //direction light
-    vec3 result = CalcDirLight(dirLight, norm, viewDir);
+    vec3 result = CalcDirectionLight(directionLight, norm, viewDir);
     
     //point light
     for (int i = 0; i < NR_POINT_LIGHTS; i++) {
@@ -74,13 +74,13 @@ void main()
     }
 
     //spot light
-    result += CalcSpotLight(spotLight, norm, FragPos, viewDir);
+    result += CalcSpotlight(spotlight, norm, FragPos, viewDir);
     
     FragColor = vec4(result, 1.0);
 }
 
 //calculate direction light
-vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir) {
+vec3 CalcDirectionLight(DirectionLight light, vec3 normal, vec3 viewDir) {
     vec3 lightDir = normalize(-light.direction);
     
     //diffuse
@@ -124,7 +124,7 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos,vec3 viewDir)
 }
 
 //calculate spot light
-vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir) {
+vec3 CalcSpotlight(Spotlight light, vec3 normal, vec3 fragPos, vec3 viewDir) {
     vec3 lightDir = normalize(light.position - fragPos);
     
     //diffuse
