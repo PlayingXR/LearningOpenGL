@@ -15,12 +15,15 @@
 		E84D87D4222413540081B328 /* DirectionLight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E84D87CE222413540081B328 /* DirectionLight.cpp */; };
 		E84D87DA222417F80081B328 /* PointLight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E84D87D8222417F80081B328 /* PointLight.cpp */; };
 		E84D87E022241D130081B328 /* Spotlight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E84D87DE22241D130081B328 /* Spotlight.cpp */; };
+		E84D87E422256D4D0081B328 /* Mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E84D87E222256D4C0081B328 /* Mesh.cpp */; };
+		E84D87EA222594710081B328 /* libassimp.4.1.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E84D87E9222594700081B328 /* libassimp.4.1.0.dylib */; };
+		E84D87EE2225B8CE0081B328 /* Model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E84D87ED2225B8CE0081B328 /* Model.cpp */; };
 		E87F4D2A21AD7F6D00402370 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E87F4D2921AD7F6D00402370 /* Cocoa.framework */; };
 		E87F4D2C21AD7F7400402370 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E87F4D2B21AD7F7400402370 /* OpenGL.framework */; };
 		E87F4D2E21AD7F7A00402370 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E87F4D2D21AD7F7A00402370 /* GLUT.framework */; };
 		E87F4D3021AD7F8100402370 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E87F4D2F21AD7F8100402370 /* CoreVideo.framework */; };
 		E87F4D3221AD7F8800402370 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E87F4D3121AD7F8800402370 /* IOKit.framework */; };
-		E8A80E8021F0D25B00F4C528 /* 6.multiple_lights.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8A80E7F21F0D25B00F4C528 /* 6.multiple_lights.mm */; };
+		E8A80E8021F0D25B00F4C528 /* LoadModel.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8A80E7F21F0D25B00F4C528 /* LoadModel.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -153,13 +156,31 @@
 		E84D87D9222417F80081B328 /* PointLight.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PointLight.hpp; sourceTree = "<group>"; };
 		E84D87DE22241D130081B328 /* Spotlight.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Spotlight.cpp; sourceTree = "<group>"; };
 		E84D87DF22241D130081B328 /* Spotlight.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Spotlight.hpp; sourceTree = "<group>"; };
+		E84D87E222256D4C0081B328 /* Mesh.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mesh.cpp; sourceTree = "<group>"; };
+		E84D87E322256D4C0081B328 /* Mesh.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh.hpp; sourceTree = "<group>"; };
+		E84D87E9222594700081B328 /* libassimp.4.1.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libassimp.4.1.0.dylib; path = ../../../../../usr/local/lib/libassimp.4.1.0.dylib; sourceTree = "<group>"; };
+		E84D87EC2225B8CE0081B328 /* Model.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Model.hpp; sourceTree = "<group>"; };
+		E84D87ED2225B8CE0081B328 /* Model.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Model.cpp; sourceTree = "<group>"; };
 		E87F4CE321AD772F00402370 /* OpenGL */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = OpenGL; sourceTree = BUILT_PRODUCTS_DIR; };
 		E87F4D2921AD7F6D00402370 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		E87F4D2B21AD7F7400402370 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		E87F4D2D21AD7F7A00402370 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
 		E87F4D2F21AD7F8100402370 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		E87F4D3121AD7F8800402370 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
-		E8A80E7F21F0D25B00F4C528 /* 6.multiple_lights.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = 6.multiple_lights.mm; sourceTree = "<group>"; };
+		E89BB47C2226DF63005F6DDF /* scene.gltf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = scene.gltf; sourceTree = "<group>"; };
+		E89BB47D2226DF63005F6DDF /* scene.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = scene.bin; sourceTree = "<group>"; };
+		E89BB47E2226DFCB005F6DDF /* Jronn_PreviewSphere.fbx */ = {isa = PBXFileReference; lastKnownFileType = file; path = Jronn_PreviewSphere.fbx; sourceTree = "<group>"; };
+		E89BB4812226E104005F6DDF /* Material3_emissive.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Material3_emissive.jpeg; sourceTree = "<group>"; };
+		E89BB4822226E104005F6DDF /* Material1_baseColor.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Material1_baseColor.jpeg; sourceTree = "<group>"; };
+		E89BB4832226E104005F6DDF /* Material3_baseColor.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Material3_baseColor.jpeg; sourceTree = "<group>"; };
+		E89BB4842226E104005F6DDF /* Material2_baseColor.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Material2_baseColor.jpeg; sourceTree = "<group>"; };
+		E89BB4852226E104005F6DDF /* Material1_emissive.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Material1_emissive.jpeg; sourceTree = "<group>"; };
+		E89BB4862226E104005F6DDF /* Material2_emissive.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Material2_emissive.jpeg; sourceTree = "<group>"; };
+		E89BB4872226E104005F6DDF /* scene.gltf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = scene.gltf; sourceTree = "<group>"; };
+		E89BB4882226E104005F6DDF /* scene.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = scene.bin; sourceTree = "<group>"; };
+		E89BB48A2226E431005F6DDF /* scene.gltf */ = {isa = PBXFileReference; lastKnownFileType = text; path = scene.gltf; sourceTree = "<group>"; };
+		E89BB48B2226E431005F6DDF /* scene.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = scene.bin; sourceTree = "<group>"; };
+		E8A80E7F21F0D25B00F4C528 /* LoadModel.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = LoadModel.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -167,6 +188,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E84D87EA222594710081B328 /* libassimp.4.1.0.dylib in Frameworks */,
 				E84D86BE2215C7240081B328 /* libglfw3.a in Frameworks */,
 				E87F4D2E21AD7F7A00402370 /* GLUT.framework in Frameworks */,
 				E87F4D3221AD7F8800402370 /* IOKit.framework in Frameworks */,
@@ -324,6 +346,9 @@
 		E84D874B221853F30081B328 /* objects */ = {
 			isa = PBXGroup;
 			children = (
+				E89BB4892226E431005F6DDF /* beautiful_medusa */,
+				E89BB47F2226E104005F6DDF /* deadpool */,
+				E89BB47B2226DF63005F6DDF /* tiamat */,
 				E84D874C221853F30081B328 /* nanosuit */,
 				E84D876E221853F30081B328 /* planet */,
 				E84D8772221853F30081B328 /* rock */,
@@ -410,6 +435,8 @@
 		E84D87BF222413540081B328 /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				E84D87EB2225B8CE0081B328 /* Model */,
+				E84D87E122256D3E0081B328 /* Mesh */,
 				E84D87C0222413540081B328 /* Camera */,
 				E84D87C3222413540081B328 /* Glad */,
 				E84D87C5222413540081B328 /* StbImage */,
@@ -476,6 +503,24 @@
 			path = Lighting;
 			sourceTree = "<group>";
 		};
+		E84D87E122256D3E0081B328 /* Mesh */ = {
+			isa = PBXGroup;
+			children = (
+				E84D87E222256D4C0081B328 /* Mesh.cpp */,
+				E84D87E322256D4C0081B328 /* Mesh.hpp */,
+			);
+			path = Mesh;
+			sourceTree = "<group>";
+		};
+		E84D87EB2225B8CE0081B328 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				E84D87EC2225B8CE0081B328 /* Model.hpp */,
+				E84D87ED2225B8CE0081B328 /* Model.cpp */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		E87F4CDA21AD772F00402370 = {
 			isa = PBXGroup;
 			children = (
@@ -496,7 +541,7 @@
 		E87F4CE521AD772F00402370 /* OpenGL */ = {
 			isa = PBXGroup;
 			children = (
-				E8A80E7F21F0D25B00F4C528 /* 6.multiple_lights.mm */,
+				E8A80E7F21F0D25B00F4C528 /* LoadModel.mm */,
 				E84D87BF222413540081B328 /* Common */,
 				E84D870E221853F30081B328 /* Resources */,
 				E84D8709221853F30081B328 /* Shaders */,
@@ -507,6 +552,7 @@
 		E87F4D0E21AD77E100402370 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E84D87E9222594700081B328 /* libassimp.4.1.0.dylib */,
 				E84D86BD2215C7240081B328 /* libglfw3.a */,
 				E87F4D3121AD7F8800402370 /* IOKit.framework */,
 				E87F4D2F21AD7F8100402370 /* CoreVideo.framework */,
@@ -515,6 +561,48 @@
 				E87F4D2921AD7F6D00402370 /* Cocoa.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		E89BB47B2226DF63005F6DDF /* tiamat */ = {
+			isa = PBXGroup;
+			children = (
+				E89BB47E2226DFCB005F6DDF /* Jronn_PreviewSphere.fbx */,
+				E89BB47C2226DF63005F6DDF /* scene.gltf */,
+				E89BB47D2226DF63005F6DDF /* scene.bin */,
+			);
+			path = tiamat;
+			sourceTree = "<group>";
+		};
+		E89BB47F2226E104005F6DDF /* deadpool */ = {
+			isa = PBXGroup;
+			children = (
+				E89BB4802226E104005F6DDF /* textures */,
+				E89BB4872226E104005F6DDF /* scene.gltf */,
+				E89BB4882226E104005F6DDF /* scene.bin */,
+			);
+			path = deadpool;
+			sourceTree = "<group>";
+		};
+		E89BB4802226E104005F6DDF /* textures */ = {
+			isa = PBXGroup;
+			children = (
+				E89BB4812226E104005F6DDF /* Material3_emissive.jpeg */,
+				E89BB4822226E104005F6DDF /* Material1_baseColor.jpeg */,
+				E89BB4832226E104005F6DDF /* Material3_baseColor.jpeg */,
+				E89BB4842226E104005F6DDF /* Material2_baseColor.jpeg */,
+				E89BB4852226E104005F6DDF /* Material1_emissive.jpeg */,
+				E89BB4862226E104005F6DDF /* Material2_emissive.jpeg */,
+			);
+			path = textures;
+			sourceTree = "<group>";
+		};
+		E89BB4892226E431005F6DDF /* beautiful_medusa */ = {
+			isa = PBXGroup;
+			children = (
+				E89BB48A2226E431005F6DDF /* scene.gltf */,
+				E89BB48B2226E431005F6DDF /* scene.bin */,
+			);
+			path = beautiful_medusa;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -573,12 +661,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E84D87E422256D4D0081B328 /* Mesh.cpp in Sources */,
 				E84D87D0222413540081B328 /* Camera.cpp in Sources */,
 				E84D87D2222413540081B328 /* Texture.cpp in Sources */,
 				E84D87D4222413540081B328 /* DirectionLight.cpp in Sources */,
-				E8A80E8021F0D25B00F4C528 /* 6.multiple_lights.mm in Sources */,
+				E8A80E8021F0D25B00F4C528 /* LoadModel.mm in Sources */,
 				E84D87E022241D130081B328 /* Spotlight.cpp in Sources */,
 				E84D87DA222417F80081B328 /* PointLight.cpp in Sources */,
+				E84D87EE2225B8CE0081B328 /* Model.cpp in Sources */,
 				E84D87D1222413540081B328 /* glad.c in Sources */,
 				E84D87D3222413540081B328 /* Shader.cpp in Sources */,
 			);

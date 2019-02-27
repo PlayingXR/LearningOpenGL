@@ -169,7 +169,7 @@ Texture::Texture(std::vector<std::string> cubeImagePaths)
 
 Texture::~Texture()
 {
-    freeTexture();
+//    freeTexture();
 }
 
 GLuint Texture::textureID() const
