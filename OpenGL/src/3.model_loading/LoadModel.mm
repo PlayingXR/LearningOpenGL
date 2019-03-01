@@ -257,20 +257,15 @@ int main(int argc, const char * argv[]) {
         
         Model nanosuitModel("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/objects/deadpool/scene.gltf");
         
-        Model cube(GeometryCube);
-        Model plane(GeometryPlane);
-        
         DirectionLight directionLight(objectShader, "directionLight");
         
-        PointLight pointLight1(objectShader, "pointLights[0]");
-        PointLight pointLight2(objectShader, "pointLights[1]");
-        PointLight pointLight3(objectShader, "pointLights[2]");
-        PointLight pointLight4(objectShader, "pointLights[3]");
+        PointLight pointLight1(objectShader, "pointLight[0]");
+        PointLight pointLight2(objectShader, "pointLight[1]");
+        PointLight pointLight3(objectShader, "pointLight[2]");
+        PointLight pointLight4(objectShader, "pointLight[3]");
         
         Spotlight spotlight(objectShader, "spotlight");
 
-        glBindVertexArray(0);
-        
         //lighting
         unsigned int lightVAO;
         glGenVertexArrays(1, &lightVAO);
@@ -294,11 +289,7 @@ int main(int argc, const char * argv[]) {
             glm::vec3( 0.0f,  0.0f, -3.0f)
         };
 
-        //启用深度测试
         glEnable(GL_DEPTH_TEST);
-        //在片段深度值小于缓冲的深度值时通过测试
-//        glDepthFunc(GL_ALWAYS);
-        
         //使用while循环来不断的渲染画面，我们称之为渲染循环（Render Loop）
         //没次循环开始之前检查一次GLFW是否被要求退出
         while (!glfwWindowShouldClose(window)) {
@@ -315,12 +306,6 @@ int main(int argc, const char * argv[]) {
             
             //glClear是一个状态使用函数，清除深度缓冲
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            
-            
-            //禁用深度写入
-//            glDepthMask(GL_FALSE);
-            
-            glm::vec3 cameraPostion = camera.position();
             
             objectShader.use();
             glm::mat4 model = glm::mat4(1.0f);
@@ -342,62 +327,68 @@ int main(int argc, const char * argv[]) {
             model = glm::transpose(model);  //转置矩阵
             objectShader.setMat4fv("normal", glm::value_ptr(model));
             
-            objectShader.setVec3f("viewPos", cameraPostion);
-            objectShader.setFloat("shininess", shininess);
-            
             nanosuitModel.draw(objectShader);
             
+//            objectShader.setInt("texture_diffuse1", 0);
+//            glActiveTexture(GL_TEXTURE0+0);
+//            glBindTexture(GL_TEXTURE_2D, texture.textureID());
+            
+            
+            glm::vec3 cameraPostion = camera.position();
+//            objectShader.setVec3f("viewPos", cameraPostion);
+//
+//            objectShader.setFloat("shininess", shininess);
+            
             // directional light
-//            directionLight.setDirection(-0.2f, -1.0f, -0.3f);
-            directionLight.setDirection(1.0f, 0.0f, 0.0f);
+            directionLight.setDirection(-0.2f, -1.0f, -0.3f);
             directionLight.setAmbient(0.05f, 0.05f, 0.05f);
             directionLight.setDiffuse(1.0f, 0.0f, 0.0f);
             directionLight.setSpecular(0.5f, 0.5f, 0.5f);
 
             // point light 1
             pointLight1.setPosition(pointLightPositions[0]);
-            pointLight1.setAmbient(0.5f, 0.5f, 0.5f);
+            pointLight1.setAmbient(0.05f, 0.05f, 0.05f);
             pointLight1.setDiffuse(0.0f, 0.0f, 1.0f);
             pointLight1.setSpecular(1.0f, 1.0f, 1.0f);
             
             pointLight1.setConstant(1.0f);
-            pointLight1.setLinear(0.045f);
-            pointLight1.setQuadratic(0.0075f);
+            pointLight1.setLinear(0.09f);
+            pointLight1.setQuadratic(0.032);
             
             // point light 2
             pointLight2.setPosition(pointLightPositions[1]);
-            pointLight2.setAmbient(0.5f, 0.5f, 0.5f);
+            pointLight2.setAmbient(0.05f, 0.05f, 0.05f);
             pointLight2.setDiffuse(0.0f, 0.0f, 1.0f);
             pointLight2.setSpecular(1.0f, 1.0f, 1.0f);
             
             pointLight2.setConstant(1.0f);
-            pointLight2.setLinear(0.045f);
-            pointLight2.setQuadratic(0.0075f);
+            pointLight2.setLinear(0.09f);
+            pointLight2.setQuadratic(0.032);
 
             // point light 3
             pointLight3.setPosition(pointLightPositions[2]);
-            pointLight3.setAmbient(0.5f, 0.5f, 0.5f);
+            pointLight3.setAmbient(0.05f, 0.05f, 0.05f);
             pointLight3.setDiffuse(0.0f, 0.0f, 1.0f);
             pointLight3.setSpecular(1.0f, 1.0f, 1.0f);
             
             pointLight3.setConstant(1.0f);
-            pointLight3.setLinear(0.045f);
-            pointLight3.setQuadratic(0.0075f);
+            pointLight3.setLinear(0.09f);
+            pointLight3.setQuadratic(0.032);
             // point light 4
             pointLight4.setPosition(pointLightPositions[3]);
-            pointLight4.setAmbient(0.5f, 0.5f, 0.5f);
+            pointLight4.setAmbient(0.05f, 0.05f, 0.05f);
             pointLight4.setDiffuse(0.0f, 0.0f, 1.0f);
             pointLight4.setSpecular(1.0f, 1.0f, 1.0f);
             
             pointLight4.setConstant(1.0f);
-            pointLight4.setLinear(0.045f);
-            pointLight4.setQuadratic(0.0075f);
+            pointLight4.setLinear(0.09f);
+            pointLight4.setQuadratic(0.032);
             
             glm::vec3 cameraFront = camera.front();
             // spotLight
             spotlight.setPosition(cameraPostion);
             spotlight.setDirection(cameraFront);
-            spotlight.setAmbient(0.5f, 0.5f, 0.5f);
+            spotlight.setAmbient(0.0f, 0.0f, 0.0f);
             spotlight.setDiffuse(0.0f, 1.0f, 0.0f);
             spotlight.setSpecular(1.0f, 1.0f, 1.0f);
             
@@ -420,22 +411,18 @@ int main(int argc, const char * argv[]) {
 //            第四个参数：EBO中的偏移量
             
             /* draw light */
-            lightShader.use();
-            
-
-            glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
-            lightShader.setVec3f("lightColor", lightColor);
-            glm::mat4 model1 = glm::mat4(1.0f);
-            glm::vec3 scale = glm::vec3(0.2f);
-            model1 = glm::translate(model1, pointLightPositions[0]);
-            model1 = glm::scale(model1, scale);
-            lightShader.setMat4fv("model", glm::value_ptr(model1));
-
-            lightShader.setMat4fv("view", glm::value_ptr(view));
-            lightShader.setMat4fv("projection", glm::value_ptr(projection));
-            
-//              glBindVertexArray(lightVAO);
+//            lightShader.use();
+//            glBindVertexArray(lightVAO);
+//
+//            lightShader.use();
+//            glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
+//            lightShader.setVec3f("lightColor", lightColor);
+//
+//            lightShader.setMat4fv("view", glm::value_ptr(view));
+//            lightShader.setMat4fv("projection", glm::value_ptr(projection));
+//
 //            for (unsigned int i = 0; i < 4; i++) {
+//
 //                glm::mat4 model = glm::mat4(1.0f);
 //                glm::vec3 scale = glm::vec3(0.2f);
 //                model = glm::translate(model, pointLightPositions[i]);
@@ -445,9 +432,6 @@ int main(int argc, const char * argv[]) {
 //                glDrawArrays(GL_TRIANGLES, 0, 36);
 //            }
 //            glBindVertexArray(0);
-
-            cube.draw(objectShader);
-//            plane.draw(lightShader);
 
             
             //检查有没有什么出发事件（键盘输入，鼠标移动等）

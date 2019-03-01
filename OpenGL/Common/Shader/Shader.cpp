@@ -254,9 +254,9 @@ Shader::Shader(const GLchar* vertexPath, const GLchar* geometryPath, const GLcha
 }
 Shader::~Shader()
 {
-    if (_programID != 0) {
-        removeShader(_programID, ShaderTypeProgram);
-    }
+//    if (_programID != 0) {
+//        removeShader(_programID, ShaderTypeProgram);
+//    }
 }
 
 void Shader::use() const

@@ -16,6 +16,11 @@
 #include "Shader.hpp"
 #include "Mesh.hpp"
 
+typedef enum {
+    GeometryCube,
+    GeometryPlane,
+} Geometry;
+
 class Model
 {
 private:
@@ -31,6 +36,16 @@ private:
      @param path 模型文件路径
      */
     void loadModel(std::string const &path);
+    
+    /**
+     创建一个Cube
+     */
+    void createCubeModel();
+    
+    /**
+     创建一个Plane
+     */
+    void createPlaneModel();
     
     /**
      递归处理节点
@@ -70,6 +85,7 @@ private:
     GLuint textureFromFile(const char* path, const std::string &directory, bool isGamma = false);
 public:
     Model(std::string const &path, bool isGamma = false);
+    Model(Geometry geometry);
     ~Model();
     
     /**
