@@ -252,52 +252,20 @@ int main(int argc, const char * argv[]) {
         glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
         std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;
         
-        Shader objectShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/shader.vs", "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/shader.fs");
-        Shader lightShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/light.vs", "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/light.fs");
+        Shader objectShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/depth.vs", "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/depth.fs");
         
-        Model nanosuitModel("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/objects/deadpool/scene.gltf");
+        Texture boxTexture("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/marble.jpg");
+        Texture planeTexture("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/metal.png");
+        
+        objectShader.setInt("texture_diffuse", 0);
         
         Model cube(GeometryCube);
         Model plane(GeometryPlane);
-        
-        DirectionLight directionLight(objectShader, "directionLight");
-        
-        PointLight pointLight1(objectShader, "pointLights[0]");
-        PointLight pointLight2(objectShader, "pointLights[1]");
-        PointLight pointLight3(objectShader, "pointLights[2]");
-        PointLight pointLight4(objectShader, "pointLights[3]");
-        
-        Spotlight spotlight(objectShader, "spotlight");
-
-        glBindVertexArray(0);
-        
-        //lighting
-        unsigned int lightVAO;
-        glGenVertexArrays(1, &lightVAO);
-        glBindVertexArray(lightVAO);
-        //创建VAO
-        unsigned int VBO;
-        glGenBuffers(1, &VBO);
-        //生成buffer来存顶点，叫VBO
-        //把VBO绑定到GL_ARRAY_BUFFER目标上
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        //这样只需要我们往GL_ARRAY_BUFFER目标上写入数据都会缓冲到VBO上
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-        
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-        
-        glm::vec3 pointLightPositions[] = {
-            glm::vec3( 0.7f,  0.2f,  2.0f),
-            glm::vec3( 2.3f, -3.3f, -4.0f),
-            glm::vec3(-4.0f,  2.0f, -12.0f),
-            glm::vec3( 0.0f,  0.0f, -3.0f)
-        };
 
         //启用深度测试
         glEnable(GL_DEPTH_TEST);
         //在片段深度值小于缓冲的深度值时通过测试
-//        glDepthFunc(GL_ALWAYS);
+        glDepthFunc(GL_LESS);
         
         //使用while循环来不断的渲染画面，我们称之为渲染循环（Render Loop）
         //没次循环开始之前检查一次GLFW是否被要求退出
@@ -324,12 +292,14 @@ int main(int argc, const char * argv[]) {
             
             objectShader.use();
             glm::mat4 model = glm::mat4(1.0f);
+
             
-            model = glm::translate(model, glm::vec3(0.0f, -2.0f, 0.0f));
-            model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-            model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-            model = glm::scale(model, glm::vec3(0.02f, 0.02f, 0.02f));
             objectShader.setMat4fv("model", glm::value_ptr(model));
+            
+            //法线矩阵
+            model = glm::inverse(model);    //逆矩阵
+            model = glm::transpose(model);  //转置矩阵
+            objectShader.setMat4fv("normal", glm::value_ptr(model));
             
             glm::mat4 view = camera.viewMatrix();
             objectShader.setMat4fv("view", glm::value_ptr(view));
@@ -337,117 +307,16 @@ int main(int argc, const char * argv[]) {
             glm::mat4 projection = glm::perspective(glm::radians(fov), (float)SCR_WIDTH/(float)SCR_HEIGHT, 0.1f, 100.0f);
             objectShader.setMat4fv("projection", glm::value_ptr(projection));
             
-            //法线矩阵
-            model = glm::inverse(model);    //逆矩阵
-            model = glm::transpose(model);  //转置矩阵
-            objectShader.setMat4fv("normal", glm::value_ptr(model));
+            boxTexture.use(GL_TEXTURE0);
+            cube.draw(objectShader);
             
-            objectShader.setVec3f("viewPos", cameraPostion);
-            objectShader.setFloat("shininess", shininess);
+            model = glm::scale(model, glm::vec3(20.0f, 20.0f, 20.0f));
+            objectShader.setMat4fv("model", glm::value_ptr(model));
             
-            nanosuitModel.draw(objectShader);
-            
-            // directional light
-//            directionLight.setDirection(-0.2f, -1.0f, -0.3f);
-            directionLight.setDirection(1.0f, 0.0f, 0.0f);
-            directionLight.setAmbient(0.05f, 0.05f, 0.05f);
-            directionLight.setDiffuse(1.0f, 0.0f, 0.0f);
-            directionLight.setSpecular(0.5f, 0.5f, 0.5f);
-
-            // point light 1
-            pointLight1.setPosition(pointLightPositions[0]);
-            pointLight1.setAmbient(0.5f, 0.5f, 0.5f);
-            pointLight1.setDiffuse(0.0f, 0.0f, 1.0f);
-            pointLight1.setSpecular(1.0f, 1.0f, 1.0f);
-            
-            pointLight1.setConstant(1.0f);
-            pointLight1.setLinear(0.045f);
-            pointLight1.setQuadratic(0.0075f);
-            
-            // point light 2
-            pointLight2.setPosition(pointLightPositions[1]);
-            pointLight2.setAmbient(0.5f, 0.5f, 0.5f);
-            pointLight2.setDiffuse(0.0f, 0.0f, 1.0f);
-            pointLight2.setSpecular(1.0f, 1.0f, 1.0f);
-            
-            pointLight2.setConstant(1.0f);
-            pointLight2.setLinear(0.045f);
-            pointLight2.setQuadratic(0.0075f);
-
-            // point light 3
-            pointLight3.setPosition(pointLightPositions[2]);
-            pointLight3.setAmbient(0.5f, 0.5f, 0.5f);
-            pointLight3.setDiffuse(0.0f, 0.0f, 1.0f);
-            pointLight3.setSpecular(1.0f, 1.0f, 1.0f);
-            
-            pointLight3.setConstant(1.0f);
-            pointLight3.setLinear(0.045f);
-            pointLight3.setQuadratic(0.0075f);
-            // point light 4
-            pointLight4.setPosition(pointLightPositions[3]);
-            pointLight4.setAmbient(0.5f, 0.5f, 0.5f);
-            pointLight4.setDiffuse(0.0f, 0.0f, 1.0f);
-            pointLight4.setSpecular(1.0f, 1.0f, 1.0f);
-            
-            pointLight4.setConstant(1.0f);
-            pointLight4.setLinear(0.045f);
-            pointLight4.setQuadratic(0.0075f);
-            
-            glm::vec3 cameraFront = camera.front();
-            // spotLight
-            spotlight.setPosition(cameraPostion);
-            spotlight.setDirection(cameraFront);
-            spotlight.setAmbient(0.5f, 0.5f, 0.5f);
-            spotlight.setDiffuse(0.0f, 1.0f, 0.0f);
-            spotlight.setSpecular(1.0f, 1.0f, 1.0f);
-            
-            spotlight.setConstant(1.0f);
-            spotlight.setLinear(0.0014f);
-            spotlight.setQuadratic(0.000007f);
-            
-            spotlight.setCutOff(glm::cos(glm::radians(5.5f)));
-            spotlight.setOuterCutOff(glm::cos(glm::radians(10.0f)));
+            planeTexture.use(GL_TEXTURE0);
+            plane.draw(objectShader);
             
             glBindVertexArray(0);
-            
-//            glm::vec3 lightDir = glm::vec3(-0.2f, -1.0f, -0.3f);
-//            ourShader.setVec3f("light.direction", glm::value_ptr(lightDir));
-
-//            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-//            第一个参数：指定绘制模式
-//            第二个参数：索引的顶点个数
-//            第三个参数：索引的类型
-//            第四个参数：EBO中的偏移量
-            
-            /* draw light */
-            lightShader.use();
-            
-
-            glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
-            lightShader.setVec3f("lightColor", lightColor);
-            glm::mat4 model1 = glm::mat4(1.0f);
-            glm::vec3 scale = glm::vec3(0.2f);
-            model1 = glm::translate(model1, pointLightPositions[0]);
-            model1 = glm::scale(model1, scale);
-            lightShader.setMat4fv("model", glm::value_ptr(model1));
-
-            lightShader.setMat4fv("view", glm::value_ptr(view));
-            lightShader.setMat4fv("projection", glm::value_ptr(projection));
-            
-//              glBindVertexArray(lightVAO);
-//            for (unsigned int i = 0; i < 4; i++) {
-//                glm::mat4 model = glm::mat4(1.0f);
-//                glm::vec3 scale = glm::vec3(0.2f);
-//                model = glm::translate(model, pointLightPositions[i]);
-//                model = glm::scale(model, scale);
-//                lightShader.setMat4fv("model", glm::value_ptr(model));
-//
-//                glDrawArrays(GL_TRIANGLES, 0, 36);
-//            }
-//            glBindVertexArray(0);
-
-            cube.draw(objectShader);
-//            plane.draw(lightShader);
 
             
             //检查有没有什么出发事件（键盘输入，鼠标移动等）
@@ -456,8 +325,6 @@ int main(int argc, const char * argv[]) {
             //切换双缓冲buffer
             glfwSwapBuffers(window);
         }
-        
-        glDeleteBuffers(1, &VBO);
         
 //        glDeleteProgram(shaderProgram);
         
