@@ -63,7 +63,7 @@ glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(0.0f, 3.0f, 10.0f));
 
 //窗口大小改变的回调
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
@@ -136,9 +136,9 @@ void processInput(GLFWwindow *window)
          camera.keyboardMove(MoveDirectionLeft, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.keyboardMove(MoveDirectionRight, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-        camera.keyboardMove(MoveDirectionUp, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+        camera.keyboardMove(MoveDirectionUp, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
         camera.keyboardMove(MoveDirectionDown, deltaTime);
 }
 
@@ -254,7 +254,7 @@ int main(int argc, const char * argv[]) {
         
         Shader objectShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/depth.vs", "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/depth.fs");
         
-        Texture boxTexture("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/marble.jpg");
+        Texture boxTexture("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/window.png");
         Texture planeTexture("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/metal.png");
         
         objectShader.setInt("texture_diffuse", 0);
@@ -266,6 +266,29 @@ int main(int argc, const char * argv[]) {
         glEnable(GL_DEPTH_TEST);
         //在片段深度值小于缓冲的深度值时通过测试
         glDepthFunc(GL_LESS);
+        
+        //开启混合
+        glEnable(GL_BLEND);
+        
+        //设置混合因子
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        
+        //也可以使用glBlendFuncSeparate为RGB和alpha通道分别设置不同的选项
+//        glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+        
+        //设置运算符
+//        glBlendEquation(GL_FUNC_ADD);
+        
+        //启用面剔除
+        glEnable(GL_CULL_FACE);
+        
+        //设置剔除背面
+        glCullFace(GL_BACK);
+        
+        //指定逆时针环绕顺序为前面
+        //GL_CCW：逆时针环绕顺序
+        //GL_CW：顺时针环绕顺序
+        glFrontFace(GL_CCW);
         
         //使用while循环来不断的渲染画面，我们称之为渲染循环（Render Loop）
         //没次循环开始之前检查一次GLFW是否被要求退出
@@ -281,16 +304,14 @@ int main(int argc, const char * argv[]) {
             //glClearColor是一个状态设置函数，清除屏幕颜色为（0.2，0.3，0.3，1.0）
             glClearColor(0.2, 0.3, 0.3, 1.0f);
             
-            //glClear是一个状态使用函数，清除深度缓冲
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            //glClear是一个状态使用函数，清除颜色缓冲、深度缓冲、模板缓冲
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
             
             
             //禁用深度写入
 //            glDepthMask(GL_FALSE);
             
             glm::vec3 cameraPostion = camera.position();
-            
-            objectShader.use();
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model, glm::vec3(0.0f, 0.51f, 0.0f));
             objectShader.setMat4fv("model", glm::value_ptr(model));
@@ -305,19 +326,43 @@ int main(int argc, const char * argv[]) {
             
             glm::mat4 projection = glm::perspective(glm::radians(fov), (float)SCR_WIDTH/(float)SCR_HEIGHT, 0.1f, 100.0f);
             objectShader.setMat4fv("projection", glm::value_ptr(projection));
+
             
-            boxTexture.use(GL_TEXTURE0);
-            cube.draw(objectShader);
             
+            objectShader.use();
             model = glm::mat4(1.0f);
             model = glm::scale(model, glm::vec3(20.0f, 20.0f, 20.0f));
             objectShader.setMat4fv("model", glm::value_ptr(model));
-            
+
             planeTexture.use(GL_TEXTURE0);
             plane.draw(objectShader);
             
             glBindVertexArray(0);
+            
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(0.0f, 0.51f, 0.0f));
+            objectShader.setMat4fv("model", glm::value_ptr(model));
 
+            boxTexture.use(GL_TEXTURE0);
+            cube.draw(objectShader);
+            
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(0.7f, 0.51f, -0.7f));
+            objectShader.setMat4fv("model", glm::value_ptr(model));
+            boxTexture.use(GL_TEXTURE0);
+            cube.draw(objectShader);
+            
+            glBindVertexArray(0);
+            
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(0.0f, 0.51f, 2.0f));
+            model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+            objectShader.setMat4fv("model", glm::value_ptr(model));
+            boxTexture.use(GL_TEXTURE0);
+            plane.draw(objectShader);
+ 
+            glBindVertexArray(0);
+            
             
             //检查有没有什么出发事件（键盘输入，鼠标移动等）
             glfwPollEvents();
