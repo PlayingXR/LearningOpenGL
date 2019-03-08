@@ -19,6 +19,8 @@
 typedef enum {
     GeometryCube,
     GeometryPlane,
+    GeometrySkybox,
+    GeometryScreen,
 } Geometry;
 
 class Model
@@ -46,6 +48,16 @@ private:
      创建一个Plane
      */
     void createPlaneModel();
+    
+    /**
+     创建一个天空盒
+     */
+    void createSkyboxModel();
+    
+    /**
+     创建一个全屏的几何体，用于后期处理
+     */
+    void createScreenModel();
     
     /**
      递归处理节点

@@ -18,35 +18,42 @@ void Model::createCubeModel()
 {
     float vertices[] = {
         // positions          // normals           // texture coords
-        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
-        0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 0.0f,
-        0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f,
         
-        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
-        0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 0.0f,
-        0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 1.0f,
+        //右
+        0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
+        0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+        0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
+        0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
         
-        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
+        //左
+        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
         -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
         
-        0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-        0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-        0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
+        //上
+        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f,
+        0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 1.0f,
+        0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
         
+        //下
+        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 0.0f,
         -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
         0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f,
         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 0.0f,
         
-        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f,
-        0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 1.0f,
-        0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f,
+        //前
+        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 1.0f,
+        0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
+        0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 0.0f,
+        
+        //后
+        0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
+        0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 0.0f,
     };
     
     for (int i = 0; i < 6; ++i) {
@@ -64,11 +71,11 @@ void Model::createCubeModel()
         }
 
         indices.push_back(0);
-        indices.push_back(2);
         indices.push_back(1);
         indices.push_back(2);
-        indices.push_back(0);
+        indices.push_back(2);
         indices.push_back(3);
+        indices.push_back(0);
         
         Mesh mesh(verticeInfos, indices, textureInfos);
         _meshs.push_back(mesh);
@@ -81,62 +88,109 @@ void Model::createCubeModel()
 void Model::createPlaneModel()
 {
     float vertices[] = {
-        // positions          // normals           // texture coords
-        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
-        0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 0.0f,
-        0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f,
-        
-        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
-        0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 0.0f,
-        0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 1.0f,
-        
-        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
-        
-        0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-        0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-        0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
-        
-        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f,
-        0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 0.0f,
-        
-        -0.5f,  0.0f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f,
-        0.5f,  0.0f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 1.0f,
-        0.5f,  0.0f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
-        -0.5f,  0.0f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f,
+        // positions            // normals              // texture coords
+        -0.5f,  0.5f,  0.0f,  0.0f,  0.0f, 1.0f,   0.0f, 1.0f,
+        -0.5f, -0.5f,  0.0f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
+        0.5f, -0.5f,  0.0f,  0.0f,  0.0f, 1.0f,   1.0f, 0.0f,
+        0.5f,  0.5f,  0.0f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
     };
     
-    for (int i = 5; i < 6; ++i) {
-        std::vector<VertexInfo> verticeInfos;
-        std::vector<GLuint> indices;
-        std::vector<TextureInfo> textureInfos;
-        
-        for (int j = 0; j < 4; ++j) {
-            int index = i * 8 * 4 + j * 8;
-            VertexInfo vertexInfo;
-            vertexInfo.position = glm::vec3(vertices[index+0], vertices[index + 1], vertices[index + 2]);
-            vertexInfo.normal = glm::vec3(vertices[index]+3, vertices[index + 4], vertices[index + 5]);
-            vertexInfo.texCoords = glm::vec2(vertices[index + 6], vertices[index + 7]);
-            verticeInfos.push_back(vertexInfo);
-        }
-        
-        indices.push_back(0);
-        indices.push_back(2);
-        indices.push_back(1);
-        indices.push_back(2);
-        indices.push_back(0);
-        indices.push_back(3);
-        
-        Mesh mesh(verticeInfos, indices, textureInfos);
-        _meshs.push_back(mesh);
+    std::vector<VertexInfo> verticeInfos;
+    std::vector<GLuint> indices;
+    std::vector<TextureInfo> textureInfos;
+    
+    for (int i = 0; i < 4; ++i) {
+        int index = i * 8;
+        VertexInfo vertexInfo;
+        vertexInfo.position = glm::vec3(vertices[index+0], vertices[index + 1], vertices[index + 2]);
+        vertexInfo.normal = glm::vec3(vertices[index]+3, vertices[index + 4], vertices[index + 5]);
+        vertexInfo.texCoords = glm::vec2(vertices[index + 6], vertices[index + 7]);
+        verticeInfos.push_back(vertexInfo);
     }
+    
+    indices.push_back(0);
+    indices.push_back(1);
+    indices.push_back(2);
+    indices.push_back(2);
+    indices.push_back(3);
+    indices.push_back(0);
+    
+    Mesh mesh(verticeInfos, indices, textureInfos);
+    _meshs.push_back(mesh);
+}
+
+void Model::createSkyboxModel()
+{
+    float vertices[] = {
+         1.0,    1.0,   1.0,
+        -1.0,    1.0,   1.0,
+        -1.0,   -1.0,   1.0,
+         1.0,   -1.0,   1.0,
+         1.0,   -1.0,  -1.0,
+         1.0,    1.0,  -1.0,
+        -1.0,    1.0,  -1.0,
+        -1.0,   -1.0,  -1.0,
+    };
+    
+    int indices[] = {
+        0, 1, 2,   0, 2, 3,    // 前
+        0, 3, 4,   0, 4, 5,    // 右
+        0, 5, 6,   0, 6, 1,    // 上
+        1, 6, 7,   1, 7, 2,    // 左
+        7, 4, 3,   7, 3, 2,    // 下
+        4, 7, 6,   4, 6, 5     // 后
+    };
+    
+    std::vector<VertexInfo> verticeInfos;
+    std::vector<GLuint> indiceInfos;
+    std::vector<TextureInfo> textureInfos;
+    
+    for (int i = 0; i < 8; ++i) {
+        int index = i * 3;
+        VertexInfo vertexInfo;
+        vertexInfo.position = glm::vec3(vertices[index+0], vertices[index + 1], vertices[index + 2]);
+        verticeInfos.push_back(vertexInfo);
+    }
+    for (int i = 0; i < 36; ++i) {
+        indiceInfos.push_back(indices[i]);
+    }
+    
+    Mesh mesh(verticeInfos, indiceInfos, textureInfos);
+    _meshs.push_back(mesh);
+}
+
+void Model::createScreenModel()
+{
+    float vertices[] = {
+        // positions            // normals              // texture coords
+        -1.0f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,   0.0f, 1.0f,
+        -1.0f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
+        1.0f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,   1.0f, 0.0f,
+        1.0f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
+    };
+    
+    std::vector<VertexInfo> verticeInfos;
+    std::vector<GLuint> indices;
+    std::vector<TextureInfo> textureInfos;
+    
+    for (int i = 0; i < 4; ++i) {
+        int index = i * 8;
+        VertexInfo vertexInfo;
+        vertexInfo.position = glm::vec3(vertices[index+0], vertices[index + 1], vertices[index + 2]);
+        vertexInfo.normal = glm::vec3(vertices[index]+3, vertices[index + 4], vertices[index + 5]);
+        vertexInfo.texCoords = glm::vec2(vertices[index + 6], vertices[index + 7]);
+        verticeInfos.push_back(vertexInfo);
+    }
+    
+    indices.push_back(0);
+    indices.push_back(1);
+    indices.push_back(2);
+    indices.push_back(2);
+    indices.push_back(3);
+    indices.push_back(0);
+    
+    Mesh mesh(verticeInfos, indices, textureInfos);
+    _meshs.push_back(mesh);
 }
 /**
  加载模型文件，存储所有网格数据
@@ -371,6 +425,10 @@ Model::Model(Geometry geometry)
         createCubeModel();
     } else if (geometry == GeometryPlane) {
         createPlaneModel();
+    } else if (geometry == GeometrySkybox) {
+        createSkyboxModel();
+    } else if (geometry == GeometryScreen) {
+        createScreenModel();
     }
 }
 

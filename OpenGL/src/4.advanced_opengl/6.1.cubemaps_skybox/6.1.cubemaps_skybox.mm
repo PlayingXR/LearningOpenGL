@@ -63,7 +63,7 @@ glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
-Camera camera(glm::vec3(0.0f, 3.0f, 10.0f));
+Camera camera(glm::vec3(3.0f, 3.0f, 10.0f));
 
 //窗口大小改变的回调
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
@@ -162,56 +162,6 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
     camera.mouseScroll(yoffset);
 }
 
-float vertices[] = {
-    // positions          // normals           // texture coords
-    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
-    0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 0.0f,
-    0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
-    0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
-    
-    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
-    0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 0.0f,
-    0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
-    0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
-    
-    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-    
-    0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-    0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
-    0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-    0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-    0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
-    0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-    
-    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
-    0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f,
-    0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
-    0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
-    
-    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f,
-    0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 1.0f,
-    0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
-    0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
-};
-
-unsigned int indices[] = {
-    0, 2, 1,
-    2, 0, 3
-};
-
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
         glfwInit();
@@ -242,8 +192,6 @@ int main(int argc, const char * argv[]) {
             return -1;
         }
         
-        glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
-        
         glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
         glfwSetCursorPosCallback(window, mouse_callback);
         glfwSetScrollCallback(window, scroll_callback);
@@ -252,16 +200,34 @@ int main(int argc, const char * argv[]) {
         glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
         std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;
         
-        Shader objectShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/depth.vs", "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/depth.fs");
+        Shader objectShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/framebuffers.vs", "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/framebuffers.fs");
         
-        Texture boxTexture("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/window.png");
+        Shader skyboxShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/skybox.vs", "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/skybox.fs");
+        
+        Texture boxTexture("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/container.jpg");
         Texture planeTexture("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/metal.png");
+        
+        std::vector<std::string> faces{
+            "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/skybox/right.jpg",
+            "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/skybox/left.jpg",
+            "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/skybox/top.jpg",
+            "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/skybox/bottom.jpg",
+            "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/skybox/front.jpg",
+            "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/skybox/back.jpg",
+        };
+        Texture cubeMap = Texture(faces);
+        
+        skyboxShader.setInt("skybox", 0);
         
         objectShader.setInt("texture_diffuse", 0);
         
         Model cube(GeometryCube);
         Model plane(GeometryPlane);
-
+        Model screen(GeometryScreen);
+        
+        Model skybox(GeometrySkybox);
+        
+        
         //启用深度测试
         glEnable(GL_DEPTH_TEST);
         //在片段深度值小于缓冲的深度值时通过测试
@@ -288,7 +254,7 @@ int main(int argc, const char * argv[]) {
         //指定逆时针环绕顺序为前面
         //GL_CCW：逆时针环绕顺序
         //GL_CW：顺时针环绕顺序
-        glFrontFace(GL_CCW);
+//        glFrontFace(GL_CCW);
         
         //使用while循环来不断的渲染画面，我们称之为渲染循环（Render Loop）
         //没次循环开始之前检查一次GLFW是否被要求退出
@@ -300,20 +266,36 @@ int main(int argc, const char * argv[]) {
             //输入
             processInput(window);
 
+            //启用深度测试
+            glEnable(GL_DEPTH_TEST);
+            
             //渲染指令
             //glClearColor是一个状态设置函数，清除屏幕颜色为（0.2，0.3，0.3，1.0）
-            glClearColor(0.2, 0.3, 0.3, 1.0f);
+            glClearColor(0.0, 0.0, 0.0, 1.0f);
             
             //glClear是一个状态使用函数，清除颜色缓冲、深度缓冲、模板缓冲
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-            
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             
             //禁用深度写入
 //            glDepthMask(GL_FALSE);
+
+            glm::mat4 view = camera.viewMatrix();
+            objectShader.setMat4fv("view", glm::value_ptr(view));
             
-            glm::vec3 cameraPostion = camera.position();
+            glm::mat4 view2 = glm::mat4(glm::mat3(view));
+            skyboxShader.setMat4fv("view", view2);
+            
+            
+            glm::mat4 projection = glm::perspective(glm::radians(fov), (float)SCR_WIDTH/(float)SCR_HEIGHT, 0.1f, 100.0f);
+            objectShader.setMat4fv("projection", projection);
+            skyboxShader.setMat4fv("projection", projection);
+
             glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(0.0f, 0.51f, 0.0f));
+            
+            objectShader.use();
+            model = glm::mat4(1.0f);
+            model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+            model = glm::scale(model, glm::vec3(20.0f, 20.0f, 1.0f));
             objectShader.setMat4fv("model", glm::value_ptr(model));
             
             //法线矩阵
@@ -321,19 +303,6 @@ int main(int argc, const char * argv[]) {
             model = glm::transpose(model);  //转置矩阵
             objectShader.setMat4fv("normal", glm::value_ptr(model));
             
-            glm::mat4 view = camera.viewMatrix();
-            objectShader.setMat4fv("view", glm::value_ptr(view));
-            
-            glm::mat4 projection = glm::perspective(glm::radians(fov), (float)SCR_WIDTH/(float)SCR_HEIGHT, 0.1f, 100.0f);
-            objectShader.setMat4fv("projection", glm::value_ptr(projection));
-
-            
-            
-            objectShader.use();
-            model = glm::mat4(1.0f);
-            model = glm::scale(model, glm::vec3(20.0f, 20.0f, 20.0f));
-            objectShader.setMat4fv("model", glm::value_ptr(model));
-
             planeTexture.use(GL_TEXTURE0);
             plane.draw(objectShader);
             
@@ -342,6 +311,11 @@ int main(int argc, const char * argv[]) {
             model = glm::mat4(1.0f);
             model = glm::translate(model, glm::vec3(0.0f, 0.51f, 0.0f));
             objectShader.setMat4fv("model", glm::value_ptr(model));
+            
+            //法线矩阵
+            model = glm::inverse(model);    //逆矩阵
+            model = glm::transpose(model);  //转置矩阵
+            objectShader.setMat4fv("normal", glm::value_ptr(model));
 
             boxTexture.use(GL_TEXTURE0);
             cube.draw(objectShader);
@@ -349,29 +323,37 @@ int main(int argc, const char * argv[]) {
             model = glm::mat4(1.0f);
             model = glm::translate(model, glm::vec3(0.7f, 0.51f, -0.7f));
             objectShader.setMat4fv("model", glm::value_ptr(model));
+            
             boxTexture.use(GL_TEXTURE0);
             cube.draw(objectShader);
-            
             glBindVertexArray(0);
             
             model = glm::mat4(1.0f);
             model = glm::translate(model, glm::vec3(0.0f, 0.51f, 2.0f));
-            model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
             objectShader.setMat4fv("model", glm::value_ptr(model));
+            
+            //法线矩阵
+            model = glm::inverse(model);    //逆矩阵
+            model = glm::transpose(model);  //转置矩阵
+            objectShader.setMat4fv("normal", glm::value_ptr(model));
+            
             boxTexture.use(GL_TEXTURE0);
             plane.draw(objectShader);
- 
             glBindVertexArray(0);
             
-            
+            glDepthFunc(GL_LEQUAL);
+            glCullFace(GL_FRONT);
+            cubeMap.use(GL_TEXTURE0);
+            skybox.draw(skyboxShader);
+            glCullFace(GL_BACK);
+            glDepthFunc(GL_LESS);
+
             //检查有没有什么出发事件（键盘输入，鼠标移动等）
             glfwPollEvents();
             
             //切换双缓冲buffer
             glfwSwapBuffers(window);
         }
-        
-//        glDeleteProgram(shaderProgram);
         
         //当渲染循环结束后我们需要正确释放所有资源
         glfwTerminate();
