@@ -23,7 +23,7 @@
 		E87F4D2E21AD7F7A00402370 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E87F4D2D21AD7F7A00402370 /* GLUT.framework */; };
 		E87F4D3021AD7F8100402370 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E87F4D2F21AD7F8100402370 /* CoreVideo.framework */; };
 		E87F4D3221AD7F8800402370 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E87F4D3121AD7F8800402370 /* IOKit.framework */; };
-		E89BB49422302FA2005F6DDF /* 6.1.cubemaps_skybox.mm in Sources */ = {isa = PBXBuildFile; fileRef = E89BB49322302FA2005F6DDF /* 6.1.cubemaps_skybox.mm */; };
+		E89BB49422302FA2005F6DDF /* 8.advanced_glsl_ubo.mm in Sources */ = {isa = PBXBuildFile; fileRef = E89BB49322302FA2005F6DDF /* 8.advanced_glsl_ubo.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -185,7 +185,7 @@
 		E89BB48E222EAF56005F6DDF /* shaderSingleColor.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = shaderSingleColor.fs; sourceTree = "<group>"; };
 		E89BB48F22301103005F6DDF /* framebuffersScreen.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = framebuffersScreen.vs; sourceTree = "<group>"; };
 		E89BB49022301103005F6DDF /* framebuffersScreen.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = framebuffersScreen.fs; sourceTree = "<group>"; };
-		E89BB49322302FA2005F6DDF /* 6.1.cubemaps_skybox.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = 6.1.cubemaps_skybox.mm; sourceTree = "<group>"; };
+		E89BB49322302FA2005F6DDF /* 8.advanced_glsl_ubo.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = 8.advanced_glsl_ubo.mm; sourceTree = "<group>"; };
 		E89BB4952232AA9E005F6DDF /* skybox.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = skybox.fs; sourceTree = "<group>"; };
 		E89BB4962232AA9E005F6DDF /* skybox.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = skybox.vs; sourceTree = "<group>"; };
 		E89BB4DA2232D79C005F6DDF /* object.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = object.vs; sourceTree = "<group>"; };
@@ -559,7 +559,7 @@
 		E87F4CE521AD772F00402370 /* OpenGL */ = {
 			isa = PBXGroup;
 			children = (
-				E89BB49322302FA2005F6DDF /* 6.1.cubemaps_skybox.mm */,
+				E89BB49322302FA2005F6DDF /* 8.advanced_glsl_ubo.mm */,
 				E84D87BF222413540081B328 /* Common */,
 				E84D870E221853F30081B328 /* Resources */,
 				E84D8709221853F30081B328 /* Shaders */,
@@ -685,7 +685,7 @@
 				E84D87D4222413540081B328 /* DirectionLight.cpp in Sources */,
 				E84D87E022241D130081B328 /* Spotlight.cpp in Sources */,
 				E84D87DA222417F80081B328 /* PointLight.cpp in Sources */,
-				E89BB49422302FA2005F6DDF /* 6.1.cubemaps_skybox.mm in Sources */,
+				E89BB49422302FA2005F6DDF /* 8.advanced_glsl_ubo.mm in Sources */,
 				E84D87EE2225B8CE0081B328 /* Model.cpp in Sources */,
 				E84D87D1222413540081B328 /* glad.c in Sources */,
 				E84D87D3222413540081B328 /* Shader.cpp in Sources */,

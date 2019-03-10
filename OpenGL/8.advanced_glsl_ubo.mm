@@ -200,7 +200,7 @@ int main(int argc, const char * argv[]) {
         glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
         std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;
         
-        Shader objectShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/framebuffers.vs", "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/object.fs");
+        Shader objectShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/object.vs", "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/object.fs");
         
         Shader skyboxShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/skybox.vs", "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/skybox.fs");
         
@@ -224,6 +224,27 @@ int main(int argc, const char * argv[]) {
         Model skybox(GeometrySkybox);
         Model box(GeometryCube);
         
+        //把顶点着色器的Uniform块设置为绑定点0
+        objectShader.setBlockBindingPoint("Matrices", 0);
+        skyboxShader.setBlockBindingPoint("Matrices", 0);
+        
+        //创建ubo
+        unsigned int uboMatrices;
+        //创建
+        glGenBuffers(1, &uboMatrices);
+        //绑定
+        glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+        //分配内存
+        glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
+        //释放绑定
+        glBindBuffer(GL_UNIFORM_BUFFER, 0);
+        
+        //把Uniform缓冲也链接到绑定点0上
+        glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboMatrices, 0, 2 * sizeof(glm::mat4));
+        //或使用
+//        glBindBufferBase(GL_UNIFORM_BUFFER, 0, uboMatrices);
+        
+        
         //启用深度测试
         glEnable(GL_DEPTH_TEST);
         //在片段深度值小于缓冲的深度值时通过测试
@@ -246,6 +267,8 @@ int main(int argc, const char * argv[]) {
         
         //设置剔除背面
         glCullFace(GL_BACK);
+        
+        
         
         //指定逆时针环绕顺序为前面
         //GL_CCW：逆时针环绕顺序
@@ -276,15 +299,13 @@ int main(int argc, const char * argv[]) {
 //            glDepthMask(GL_FALSE);
 
             glm::mat4 view = camera.viewMatrix();
-            objectShader.setMat4fv("view", glm::value_ptr(view));
-            
-            glm::mat4 view2 = glm::mat4(glm::mat3(view));
-            skyboxShader.setMat4fv("view", view2);
-            
-            
             glm::mat4 projection = glm::perspective(glm::radians(fov), (float)SCR_WIDTH/(float)SCR_HEIGHT, 0.1f, 100.0f);
-            objectShader.setMat4fv("projection", projection);
-            skyboxShader.setMat4fv("projection", projection);
+
+            //为ubo填充数据
+            glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);//把uboMatrices绑定Uniform缓冲
+            glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(view));//根据block中的布局先设置view，再设置projection
+            glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(projection));
+            glBindBuffer(GL_UNIFORM_BUFFER, 0);//释放绑定
 
             glm::mat4 model = glm::mat4(1.0f);
 
