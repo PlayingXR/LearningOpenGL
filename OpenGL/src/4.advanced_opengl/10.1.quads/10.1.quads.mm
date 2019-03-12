@@ -199,10 +199,13 @@ int main(int argc, const char * argv[]) {
         int nrAttributes;
         glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
         std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;
+
+        Shader objectShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/object.vs",
+//                            "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/object.gs",
+                            "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/object.fs");
         
-        Shader objectShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/object.vs", "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/object.fs");
-        
-        Shader skyboxShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/skybox.vs", "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/skybox.fs");
+        Shader skyboxShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/skybox.vs",
+                            "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/skybox.fs");
         
         std::vector<std::string> faces{
             "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/skybox/right.jpg",
@@ -212,21 +215,70 @@ int main(int argc, const char * argv[]) {
             "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/skybox/front.jpg",
             "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/skybox/back.jpg",
         };
-        
+
         Texture cubeMap(faces);
-        
+
         skyboxShader.setInt("skybox", 0);
-        
+
         objectShader.setInt("skybox", 0);
         
         Model object("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/objects/nanosuit/nanosuit.obj");
         
         Model skybox(GeometrySkybox);
-        Model box(GeometryCube);
         
-        //把顶点着色器的Uniform块设置为绑定点0
+//        把顶点着色器的Uniform块设置为绑定点0
         objectShader.setBlockBindingPoint("Matrices", 0);
         skyboxShader.setBlockBindingPoint("Matrices", 0);
+        
+        float quadVertices[] = {
+            // positions     // colors
+            -0.05f,  0.05f,  1.0f, 0.0f, 0.0f,
+            0.05f, -0.05f,  0.0f, 1.0f, 0.0f,
+            -0.05f, -0.05f,  0.0f, 0.0f, 1.0f,
+            
+            -0.05f,  0.05f,  1.0f, 0.0f, 0.0f,
+            0.05f, -0.05f,  0.0f, 1.0f, 0.0f,
+            0.05f,  0.05f,  0.0f, 1.0f, 1.0f
+        };
+        
+        unsigned int VAO, VBO;
+        glGenVertexArrays(1, &VAO);
+        glBindVertexArray(VAO);
+        
+        glGenBuffers(1, &VBO);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        
+        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+        
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+        
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
+        
+        glBindVertexArray(0);
+        
+        
+        glm::vec2 translations[100];
+        int index = 0;
+        float offset = 0.1;
+        for (int y = -10; y < 10; y += 2) {
+            for (int x = -10; x < 10;  x+= 2) {
+                glm::vec2 translation;
+                translation.x = (float)x / 10.0f + offset;
+                translation.y = (float)y / 10.0f + offset;
+                translations[index++] = translation;
+            }
+        }
+
+        for (unsigned int i = 0; i < 100; i++) {
+            std::stringstream ss;
+            std::string index;
+            ss << i;
+            index = ss.str();
+
+            objectShader.setVec2f(("offsets[" + index + "]").c_str(), translations[i]);
+        }
         
         //创建ubo
         unsigned int uboMatrices;
@@ -238,36 +290,35 @@ int main(int argc, const char * argv[]) {
         glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
         //释放绑定
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
-        
+
         //把Uniform缓冲也链接到绑定点0上
         glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboMatrices, 0, 2 * sizeof(glm::mat4));
         //或使用
 //        glBindBufferBase(GL_UNIFORM_BUFFER, 0, uboMatrices);
-        
-        
+
+
         //启用深度测试
         glEnable(GL_DEPTH_TEST);
         //在片段深度值小于缓冲的深度值时通过测试
         glDepthFunc(GL_LESS);
-        
+
         //开启混合
         glEnable(GL_BLEND);
-        
+
         //设置混合因子
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         
-        //也可以使用glBlendFuncSeparate为RGB和alpha通道分别设置不同的选项
-//        glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+//        也可以使用glBlendFuncSeparate为RGB和alpha通道分别设置不同的选项
+        glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
         
-        //设置运算符
-//        glBlendEquation(GL_FUNC_ADD);
+//        设置运算符
+        glBlendEquation(GL_FUNC_ADD);
         
         //启用面剔除
-        glEnable(GL_CULL_FACE);
-        
-        //设置剔除背面
-        glCullFace(GL_BACK);
-        
+//        glEnable(GL_CULL_FACE);
+//
+//        //设置剔除背面
+//        glCullFace(GL_BACK);
         
         
         //指定逆时针环绕顺序为前面
@@ -290,7 +341,7 @@ int main(int argc, const char * argv[]) {
             
             //渲染指令
             //glClearColor是一个状态设置函数，清除屏幕颜色为（0.2，0.3，0.3，1.0）
-            glClearColor(0.0, 0.0, 0.0, 1.0f);
+            glClearColor(0.2,0.3,0.3, 1.0f);
             
             //glClear是一个状态使用函数，清除颜色缓冲、深度缓冲、模板缓冲
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -310,22 +361,24 @@ int main(int argc, const char * argv[]) {
             glm::mat4 model = glm::mat4(1.0f);
 
             model = glm::mat4(1.0f);
-//            model = glm::translate(model, glm::vec3(0.0f, -1.0f, 0.0f));
-            model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
+            model = glm::translate(model, glm::vec3(0.0f, -1.0f, 0.0f));
+            model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
             objectShader.setMat4fv("model", glm::value_ptr(model));
-            
+
             //法线矩阵
             model = glm::inverse(model);    //逆矩阵
             model = glm::transpose(model);  //转置矩阵
             objectShader.setMat4fv("normal", glm::value_ptr(model));
-            
+
             glm::vec3 viewPos = camera.position();
             objectShader.setVec3f("viewPos", viewPos);
-            
-            cubeMap.use(GL_TEXTURE0);
-            object.draw(objectShader);
-//            box.draw(objectShader);
-            glBindVertexArray(0);
+            objectShader.setFloat("time", currentFrame);
+            objectShader.use();
+            glBindVertexArray(VAO);
+            glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 100);
+//            glDrawArrays(GL_TRIANGLES, 0, 6);
+//            object.draw(objectShader);
+//            glBindVertexArray(0);
             
             glDepthFunc(GL_LEQUAL);
             glCullFace(GL_FRONT);

@@ -17,13 +17,13 @@ layout (std140) uniform Matrices
 };
 
 uniform mat4 model;         //模型矩阵
-uniform mat4 normal;        //法线矩阵，由模型矩阵左上角的逆矩阵的转置矩阵得到，3x3
+//uniform mat4 normal;        //法线矩阵，由模型矩阵左上角的逆矩阵的转置矩阵得到，3x3
 
 
 void main()
 {
     gl_Position = projection * view * model * vec4(aPos, 1.0);
     vs_out.TexCoords = aTexCoords;
-    vs_out.Normal = mat3(normal) * aNormal;
+//    vs_out.Normal = mat3(normal) * aNormal;
     vs_out.FragPos = vec3(model * vec4(aPos, 1.0));
 }
