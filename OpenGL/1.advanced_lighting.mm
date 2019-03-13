@@ -59,6 +59,8 @@ float specularStrength = 0.5f;
 
 bool firstMouse = true;
 
+bool isBlinn = true;
+
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -79,14 +81,16 @@ void processInput(GLFWwindow *window)
         isLineModel = true;
         if (isLineModel) {
             isLineModel = false;
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+//            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            isBlinn = false;
         }
     }
     if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
         isLineModel = false;
         if (!isLineModel) {
             isLineModel = true;
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+//            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            isBlinn = true;
         }
 
     }
@@ -203,9 +207,8 @@ int main(int argc, const char * argv[]) {
         glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
         std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;
 
-        Shader objectShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/object.vs",
-//                            "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/object.gs",
-                            "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/object.fs");
+        Shader objectShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/shader.vs",
+                            "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/shader.fs");
         
         Shader skyboxShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/skybox.vs",
                             "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/skybox.fs");
@@ -223,15 +226,16 @@ int main(int argc, const char * argv[]) {
         };
 
         Texture cubeMap(faces);
+        
+        Texture planeMap("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/wood.png");
 
         skyboxShader.setInt("skybox", 0);
-        objectShader.setInt("skybox", 1);
         screenShader.setInt("screenTexture", 0);
+        objectShader.setInt("skybox", 1);
+        objectShader.setInt("texture_diffuse1", 0);
         
-        Model box(GeometryCube);
-        
+        Model plane(GeometryPlane);
         Model skybox(GeometrySkybox);
-        Model screen(GeometryScreen);
         
 //        把顶点着色器的Uniform块设置为绑定点0
         objectShader.setBlockBindingPoint("Matrices", 0);
@@ -239,72 +243,6 @@ int main(int argc, const char * argv[]) {
         
         //开启MSAA
 //        glEnable(GL_MULTISAMPLE);
-        
-        //创建一个FBO
-        unsigned int frameBuffer;
-        glGenFramebuffers(1, &frameBuffer);
-
-        //绑定到帧缓冲
-        glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
-
-        //创建多重采样纹理缓冲
-        unsigned int textureColorBufferMultiSampled;
-        glGenTextures(1, &textureColorBufferMultiSampled);
-        //绑定到纹理缓冲
-        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, textureColorBufferMultiSampled);
-        //纹理分配内存
-        glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGB, SCR_WIDTH, SCR_HEIGHT, GL_TRUE);
-        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
-
-        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
-
-        //把纹理缓冲装配到帧缓冲的颜色附件GL_COLOR_ATTACHMENT0上
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, textureColorBufferMultiSampled, 0);
-
-        //创建一个渲染缓冲对象
-        unsigned int rbo;
-        glGenRenderbuffers(1, &rbo);
-
-        //绑定到渲染缓冲
-        glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-
-        //分配存储
-        glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT);
-
-        //解除渲染缓冲绑定
-        glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
-        //把渲染缓冲对象装配到GL_DEPTH_STENCIL_ATTACHMENT上
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
-
-        //检查帧缓冲是否完整
-        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-            std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
-        }
-
-        //解绑帧缓冲
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glBindRenderbuffer(GL_RENDERBUFFER, 0);
-        
-        //创建一个中间FBO用于还原多倍采样
-        unsigned int intermediateFBO;
-        glGenFramebuffers(1, &intermediateFBO);
-        glBindFramebuffer(GL_FRAMEBUFFER, intermediateFBO);
-        
-        unsigned int screenTexture;
-        glGenTextures(1, &screenTexture);
-        glBindTexture(GL_TEXTURE_2D, screenTexture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, screenTexture, 0);
-        
-        //检查帧缓冲是否完整
-        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-            std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
-        }
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
         
         //创建ubo
         unsigned int uboMatrices;
@@ -354,15 +292,6 @@ int main(int argc, const char * argv[]) {
             //输入
             processInput(window);
             
-            //渲染指令
-            //glClearColor是一个状态设置函数，清除屏幕颜色为（0.2，0.3，0.3，1.0）
-            glClearColor(0.0, 0.0, 0.0, 1.0f);
-            
-            //glClear是一个状态使用函数，清除颜色缓冲、深度缓冲、模板缓冲
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            
-            glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
-
             //启用深度测试
             glEnable(GL_DEPTH_TEST);
             
@@ -388,26 +317,26 @@ int main(int argc, const char * argv[]) {
             glm::mat4 model = glm::mat4(1.0f);
 
             model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(0.0f, 3.0f, 0.0f));
-//            model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+            model = glm::translate(model, glm::vec3(0.0f, -1.0f, 0.0f));
+            model = glm::scale(model, glm::vec3(10.0f, 10.0f, 10.0f));
+            model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
             objectShader.setMat4fv("model", model);
-            box.draw(objectShader);
+            
+            //法线矩阵
+            model = glm::inverse(model);    //逆矩阵
+            model = glm::transpose(model);  //转置矩阵
+            objectShader.setMat4fv("normal", model);
+            
+            glm::vec3 position = camera.position();
+            glm::vec3 lightPosition = glm::vec3(0.0);
+            
+            objectShader.setVec3f("viewPos", position);
+            objectShader.setVec3f("lightPos", lightPosition);
+            objectShader.setInt("blinn", isBlinn);
+            
+            planeMap.use(GL_TEXTURE0);
+            plane.draw(objectShader);
             glBindVertexArray(0);
-            
-            glBindFramebuffer(GL_READ_FRAMEBUFFER, frameBuffer);
-            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, intermediateFBO);
-            glBlitFramebuffer(0, 0, SCR_WIDTH, SCR_HEIGHT, 0, 0, SCR_WIDTH, SCR_HEIGHT, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-            
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-            glDisable(GL_DEPTH_TEST);
-
-            glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT);
-
-            screenShader.use();
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, screenTexture);
-            screen.draw(screenShader);
             
             //渲染天空盒
 //            glDepthFunc(GL_LEQUAL);

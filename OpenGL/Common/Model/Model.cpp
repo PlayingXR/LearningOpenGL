@@ -65,7 +65,7 @@ void Model::createCubeModel()
             int index = i * 8 * 4 + j * 8;
             VertexInfo vertexInfo;
             vertexInfo.position = glm::vec3(vertices[index], vertices[index + 1], vertices[index + 2]);
-            vertexInfo.normal = glm::vec3(vertices[index]+3, vertices[index + 4], vertices[index + 5]);
+            vertexInfo.normal = glm::vec3(vertices[index+3], vertices[index + 4], vertices[index + 5]);
             vertexInfo.texCoords = glm::vec2(vertices[index + 6], vertices[index + 7]);
             verticeInfos.push_back(vertexInfo);
         }
@@ -103,7 +103,7 @@ void Model::createPlaneModel()
         int index = i * 8;
         VertexInfo vertexInfo;
         vertexInfo.position = glm::vec3(vertices[index+0], vertices[index + 1], vertices[index + 2]);
-        vertexInfo.normal = glm::vec3(vertices[index]+3, vertices[index + 4], vertices[index + 5]);
+        vertexInfo.normal = glm::vec3(vertices[index+3], vertices[index + 4], vertices[index + 5]);
         vertexInfo.texCoords = glm::vec2(vertices[index + 6], vertices[index + 7]);
         verticeInfos.push_back(vertexInfo);
     }
@@ -177,7 +177,7 @@ void Model::createScreenModel()
         int index = i * 8;
         VertexInfo vertexInfo;
         vertexInfo.position = glm::vec3(vertices[index+0], vertices[index + 1], vertices[index + 2]);
-        vertexInfo.normal = glm::vec3(vertices[index]+3, vertices[index + 4], vertices[index + 5]);
+        vertexInfo.normal = glm::vec3(vertices[index+3], vertices[index + 4], vertices[index + 5]);
         vertexInfo.texCoords = glm::vec2(vertices[index + 6], vertices[index + 7]);
         verticeInfos.push_back(vertexInfo);
     }
