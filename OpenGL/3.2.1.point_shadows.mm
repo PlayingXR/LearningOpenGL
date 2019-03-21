@@ -217,6 +217,7 @@ int main(int argc, const char * argv[]) {
                             "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/framebuffersScreen.fs");
         
         Shader shadowMappingShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/shadowMapping.vs",
+                                   "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/shadowMapping.gs",
                                    "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/shadowMapping.fs");
         
         Shader debugShadowMappingShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/debugShadowMapping.vs",
@@ -249,7 +250,7 @@ int main(int argc, const char * argv[]) {
         Model box(GeometryCube);
         
         
-        glm::vec3 lightPos(-2.0f, 4.0f, -1.0f);
+        glm::vec3 lightPos(0.0f, 0.0f, 0.0f);
         
 //        把顶点着色器的Uniform块设置为绑定点0
         objectShader.setBlockBindingPoint("Matrices", 0);
@@ -260,26 +261,32 @@ int main(int argc, const char * argv[]) {
         glGenFramebuffers(1, &depthMapFBO);
         const GLuint SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
 
-        GLuint depthMap;
+        GLuint depthCubeMap;
         //创建
-        glGenTextures(1, &depthMap);
+        glGenTextures(1, &depthCubeMap);
         //绑定
-        glBindTexture(GL_TEXTURE_2D, depthMap);
-        //分配内存，但是不填充
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubeMap);
+        
+        for (GLuint i = 0; i < 6; ++i) {
+            //分配内存，但是不填充
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+        }
         //设置滤波
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         //设置环绕
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-        GLfloat borderColor[] = {1.0, 1.0, 1.0, 1.0};
-        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
+        
+        
+//        GLfloat borderColor[] = {1.0, 1.0, 1.0, 1.0};
+//        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
         //绑定帧缓冲
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
         //装配深度缓冲属性
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+        glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthCubeMap, 0);
         //不设置颜色缓冲
         glDrawBuffer(GL_NONE);
         glReadBuffer(GL_NONE);
@@ -294,9 +301,9 @@ int main(int argc, const char * argv[]) {
         //创建
         glGenBuffers(1, &uboMatrices);
         glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
-        glBufferData(GL_UNIFORM_BUFFER, 3 * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
+        glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
-        glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboMatrices, 0, 3 * sizeof(glm::mat4));
+        glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboMatrices, 0, 2 * sizeof(glm::mat4));
 
         //启用深度测试
         glEnable(GL_DEPTH_TEST);
@@ -315,11 +322,11 @@ int main(int argc, const char * argv[]) {
 //        设置运算符
         glBlendEquation(GL_FUNC_ADD);
         
-        //启用面剔除
-        glEnable(GL_CULL_FACE);
-
-        //设置剔除背面
-        glCullFace(GL_BACK);
+//        //启用面剔除
+//        glEnable(GL_CULL_FACE);
+//
+//        //设置剔除背面
+//        glCullFace(GL_BACK);
         
         
         //指定逆时针环绕顺序为前面
@@ -337,62 +344,66 @@ int main(int argc, const char * argv[]) {
             //输入
             processInput(window);
             
+//            lightPos.z = sin(glfwGetTime() * 0.5) * 3.0;
+            
             //渲染指令
-            //glClearColor是一个状态设置函数，清除屏幕颜色为（0.2，0.3，0.3，1.0）
             glClearColor(0.0, 0.0, 0.0, 1.0f);
 
             //glClear是一个状态使用函数，清除颜色缓冲、深度缓冲、模板缓冲
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            glm::mat4 lightProjection, lightView;
-            glm::mat4 lightSpaceMatrix;
-            float nearPlane = 1.0f, farPlane = 7.5f;
-            lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, nearPlane, farPlane);
-            lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
-            lightSpaceMatrix = lightProjection * lightView;
-
-            shadowMappingShader.setMat4fv("lightSpaceMatrix", lightSpaceMatrix);
+            float nearPlane = 1.0f, farPlane = 25.0f;
+            glm::mat4 lightProjection = glm::perspective(glm::radians(90.0f), (float)SHADOW_WIDTH / (float)SHADOW_HEIGHT, nearPlane, farPlane);
+            
+            std::vector<glm::mat4> shadowTransforms;
+            //右
+            shadowTransforms.push_back(lightProjection * glm::lookAt(lightPos, lightPos + glm::vec3( 1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)));
+            //左
+            shadowTransforms.push_back(lightProjection * glm::lookAt(lightPos, lightPos + glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)));
+            //上
+            shadowTransforms.push_back(lightProjection * glm::lookAt(lightPos, lightPos + glm::vec3( 0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)));
+            //下
+            shadowTransforms.push_back(lightProjection * glm::lookAt(lightPos, lightPos + glm::vec3( 0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)));
+            //近
+            shadowTransforms.push_back(lightProjection * glm::lookAt(lightPos, lightPos + glm::vec3( 0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)));
+            //远
+            shadowTransforms.push_back(lightProjection * glm::lookAt(lightPos, lightPos + glm::vec3( 0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f)));
 
             //生成深度贴图
             glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
             glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
             glClear(GL_DEPTH_BUFFER_BIT);
+            
+            for (unsigned int i = 0; i < 6; ++i) {
+                shadowMappingShader.setMat4fv("shadowMatrices[" + std::to_string(i) + "]", shadowTransforms[i]);
+            }
+            shadowMappingShader.setFloat("farPlane", farPlane);
+            shadowMappingShader.setVec3f("lightPos", lightPos);
 //            glCullFace(GL_FRONT);
 
             //渲染场景
             glm::mat4 model = glm::mat4(1.0f);
-            model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
-            model = glm::scale(model, glm::vec3(10.0f));
-            shadowMappingShader.setMat4fv("model", model);
-            plane.draw(shadowMappingShader);
 
             model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(0.0, 0.5f, 0.0));
+            model = glm::translate(model, glm::vec3(-3.0, 0.0f, 0.0));
             shadowMappingShader.setMat4fv("model", model);
             box.draw(shadowMappingShader);
 
             model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(0.2, 2.0f, 0.0));
+            model = glm::translate(model, glm::vec3(3.0, 0.0f, -.0));
             shadowMappingShader.setMat4fv("model", model);
             box.draw(shadowMappingShader);
+            
             glBindVertexArray(0);
-
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             
             //使用深度贴图
             glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
-            
-            //启用深度测试
-            glEnable(GL_DEPTH_TEST);
-
-            //渲染指令
-            //glClearColor是一个状态设置函数，清除屏幕颜色为（0.2，0.3，0.3，1.0）
-            glClearColor(0.0, 0.0, 0.0, 1.0f);
 
             //glClear是一个状态使用函数，清除颜色缓冲、深度缓冲、模板缓冲
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             
-            glCullFace(GL_BACK);
+//            glCullFace(GL_BACK);
             
             //禁用深度写入
             //            glDepthMask(GL_FALSE);
@@ -404,23 +415,61 @@ int main(int argc, const char * argv[]) {
             glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);//把uboMatrices绑定Uniform缓冲
             glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(view));//根据block中的布局先设置view，再设置projection
             glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(projection));
-            glBufferSubData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(lightSpaceMatrix));
+//            glBufferSubData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(lightSpaceMatrix));
             glBindBuffer(GL_UNIFORM_BUFFER, 0);//释放绑定
             
-            
+            objectShader.use();
+            //1、再渲染场景
             glActiveTexture(GL_TEXTURE2);
-            glBindTexture(GL_TEXTURE_2D, depthMap);
+            glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubeMap);
+            
             planeMap.use(GL_TEXTURE0);
             
             glm::vec3 position = camera.position();
             
             objectShader.setVec3f("viewPos", position);
             objectShader.setVec3f("lightPos", lightPos);
+            objectShader.setFloat("farPlane", farPlane);
+            objectShader.setInt("shadows", 1);
             
-            //渲染场景
+//            model = glm::mat4(1.0f);
+//            model = glm::translate(model, glm::vec3(10.0, 0.0, 10.0));
+//            model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
+//            model = glm::scale(model, glm::vec3(10.0f));
+//            objectShader.setMat4fv("model", model);
+//
+//            //            //法线矩阵
+//            model = glm::inverse(model);    //逆矩阵
+//            model = glm::transpose(model);  //转置矩阵
+//            objectShader.setMat4fv("normal", model);
+////
+//            plane.draw(objectShader);
+            
             model = glm::mat4(1.0f);
-            model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
-            model = glm::scale(model, glm::vec3(10.0f));
+            model = glm::translate(model, glm::vec3(-3.0, 0.0f, 0.0));
+            objectShader.setMat4fv("model", model);
+            
+            //            //法线矩阵
+            model = glm::inverse(model);    //逆矩阵
+            model = glm::transpose(model);  //转置矩阵
+            objectShader.setMat4fv("normal", model);
+            box.draw(objectShader);
+            
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(3.0, 0.0f, 0.0));
+            objectShader.setMat4fv("model", model);
+            
+            //            //法线矩阵
+            model = glm::inverse(model);    //逆矩阵
+            model = glm::transpose(model);  //转置矩阵
+            objectShader.setMat4fv("normal", model);
+            
+            box.draw(objectShader);
+            
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(10.0, 0.0, 0.0));
+            model = glm::scale(model, glm::vec3(25.0, 25.0f, 25.0f));
+            model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(0.0, 1.0, 0.0));
             objectShader.setMat4fv("model", model);
             
             //            //法线矩阵
@@ -431,7 +480,9 @@ int main(int argc, const char * argv[]) {
             plane.draw(objectShader);
             
             model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(0.0, 0.5f, 0.0));
+            model = glm::translate(model, glm::vec3(-10.0, 0.0, 0.0));
+            model = glm::scale(model, glm::vec3(25.0, 25.0f, 25.0f));
+            model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
             objectShader.setMat4fv("model", model);
             
             //            //法线矩阵
@@ -439,18 +490,8 @@ int main(int argc, const char * argv[]) {
             model = glm::transpose(model);  //转置矩阵
             objectShader.setMat4fv("normal", model);
             
-            box.draw(objectShader);
-            
-            model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(0.2, 2.0f, 0.0));
-            objectShader.setMat4fv("model", model);
-            
-            //            //法线矩阵
-            model = glm::inverse(model);    //逆矩阵
-            model = glm::transpose(model);  //转置矩阵
-            objectShader.setMat4fv("normal", model);
-            
-            box.draw(objectShader);
+            plane.draw(objectShader);
+
 //            debugShadowMappingShader.setFloat("near_Plane", nearPlane);
 //            debugShadowMappingShader.setFloat("far_Plane", farPlane);
             //使用深度贴图
@@ -460,13 +501,14 @@ int main(int argc, const char * argv[]) {
             
 //            glBindVertexArray(0);
 
-            //渲染天空盒
+            //2、先渲染天空盒
 //            glDepthFunc(GL_LEQUAL);
 //            glCullFace(GL_FRONT);
 //            cubeMap.use(GL_TEXTURE0);
 //            skybox.draw(skyboxShader);
 //            glCullFace(GL_BACK);
 //            glDepthFunc(GL_LESS);
+            
 
             //检查有没有什么出发事件（键盘输入，鼠标移动等）
             glfwPollEvents();
