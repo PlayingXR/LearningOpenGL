@@ -23,7 +23,7 @@
 		E87F4D2E21AD7F7A00402370 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E87F4D2D21AD7F7A00402370 /* GLUT.framework */; };
 		E87F4D3021AD7F8100402370 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E87F4D2F21AD7F8100402370 /* CoreVideo.framework */; };
 		E87F4D3221AD7F8800402370 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E87F4D3121AD7F8800402370 /* IOKit.framework */; };
-		E89BB4E52236AC47005F6DDF /* 3.2.1.point_shadows.mm in Sources */ = {isa = PBXBuildFile; fileRef = E89BB4E42236AC47005F6DDF /* 3.2.1.point_shadows.mm */; };
+		E89BB4E52236AC47005F6DDF /* 4.normal_mapping.mm in Sources */ = {isa = PBXBuildFile; fileRef = E89BB4E42236AC47005F6DDF /* 4.normal_mapping.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -40,6 +40,19 @@
 
 /* Begin PBXFileReference section */
 		E83B171422428578000A8148 /* shadowMapping.gs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = shadowMapping.gs; sourceTree = "<group>"; };
+		E83B173722477F6F000A8148 /* screenshot.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = screenshot.jpg; sourceTree = "<group>"; };
+		E83B173922477F6F000A8148 /* Cube_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Cube_BaseColor.png; sourceTree = "<group>"; };
+		E83B173A22477F6F000A8148 /* Cube.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = Cube.bin; sourceTree = "<group>"; };
+		E83B173B22477F6F000A8148 /* Cube_MetallicRoughness.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Cube_MetallicRoughness.png; sourceTree = "<group>"; };
+		E83B173C22477F6F000A8148 /* Cube.gltf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cube.gltf; sourceTree = "<group>"; };
+		E83B173D22477F6F000A8148 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		E83B1740224780AB000A8148 /* screenshot.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = screenshot.jpg; sourceTree = "<group>"; };
+		E83B1742224780AB000A8148 /* TwoSidedPlane_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TwoSidedPlane_BaseColor.png; sourceTree = "<group>"; };
+		E83B1743224780AB000A8148 /* TwoSidedPlane_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TwoSidedPlane_Normal.png; sourceTree = "<group>"; };
+		E83B1744224780AB000A8148 /* TwoSidedPlane.gltf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TwoSidedPlane.gltf; sourceTree = "<group>"; };
+		E83B1745224780AB000A8148 /* TwoSidedPlane.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = TwoSidedPlane.bin; sourceTree = "<group>"; };
+		E83B1746224780AB000A8148 /* TwoSidedPlane_MetallicRoughness.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TwoSidedPlane_MetallicRoughness.png; sourceTree = "<group>"; };
+		E83B1747224780AB000A8148 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		E84D86BD2215C7240081B328 /* libglfw3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglfw3.a; path = ../../../../../usr/local/lib/libglfw3.a; sourceTree = "<group>"; };
 		E84D870A221853F30081B328 /* light.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = light.vs; sourceTree = "<group>"; };
 		E84D870B221853F30081B328 /* shader.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = shader.vs; sourceTree = "<group>"; };
@@ -191,7 +204,7 @@
 		E89BB4DA2232D79C005F6DDF /* object.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = object.vs; sourceTree = "<group>"; };
 		E89BB4DB2232D79C005F6DDF /* object.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = object.fs; sourceTree = "<group>"; };
 		E89BB4DC22355C2D005F6DDF /* object.gs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = object.gs; sourceTree = "<group>"; };
-		E89BB4E42236AC47005F6DDF /* 3.2.1.point_shadows.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = 3.2.1.point_shadows.mm; sourceTree = "<group>"; };
+		E89BB4E42236AC47005F6DDF /* 4.normal_mapping.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = 4.normal_mapping.mm; sourceTree = "<group>"; };
 		E89BB4E62236BA3A005F6DDF /* planet.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = planet.vs; sourceTree = "<group>"; };
 		E89BB4E72236BA3A005F6DDF /* planet.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = planet.fs; sourceTree = "<group>"; };
 		E89BB4E8223D3AF9005F6DDF /* shadowMapping.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = shadowMapping.vs; sourceTree = "<group>"; };
@@ -218,6 +231,65 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		E83B173522477F6F000A8148 /* Cube */ = {
+			isa = PBXGroup;
+			children = (
+				E83B173622477F6F000A8148 /* screenshot */,
+				E83B173822477F6F000A8148 /* glTF */,
+				E83B173D22477F6F000A8148 /* README.md */,
+			);
+			path = Cube;
+			sourceTree = "<group>";
+		};
+		E83B173622477F6F000A8148 /* screenshot */ = {
+			isa = PBXGroup;
+			children = (
+				E83B173722477F6F000A8148 /* screenshot.jpg */,
+			);
+			path = screenshot;
+			sourceTree = "<group>";
+		};
+		E83B173822477F6F000A8148 /* glTF */ = {
+			isa = PBXGroup;
+			children = (
+				E83B173922477F6F000A8148 /* Cube_BaseColor.png */,
+				E83B173A22477F6F000A8148 /* Cube.bin */,
+				E83B173B22477F6F000A8148 /* Cube_MetallicRoughness.png */,
+				E83B173C22477F6F000A8148 /* Cube.gltf */,
+			);
+			path = glTF;
+			sourceTree = "<group>";
+		};
+		E83B173E224780AB000A8148 /* TwoSidedPlane */ = {
+			isa = PBXGroup;
+			children = (
+				E83B173F224780AB000A8148 /* screenshot */,
+				E83B1741224780AB000A8148 /* glTF */,
+				E83B1747224780AB000A8148 /* README.md */,
+			);
+			path = TwoSidedPlane;
+			sourceTree = "<group>";
+		};
+		E83B173F224780AB000A8148 /* screenshot */ = {
+			isa = PBXGroup;
+			children = (
+				E83B1740224780AB000A8148 /* screenshot.jpg */,
+			);
+			path = screenshot;
+			sourceTree = "<group>";
+		};
+		E83B1741224780AB000A8148 /* glTF */ = {
+			isa = PBXGroup;
+			children = (
+				E83B1742224780AB000A8148 /* TwoSidedPlane_BaseColor.png */,
+				E83B1743224780AB000A8148 /* TwoSidedPlane_Normal.png */,
+				E83B1744224780AB000A8148 /* TwoSidedPlane.gltf */,
+				E83B1745224780AB000A8148 /* TwoSidedPlane.bin */,
+				E83B1746224780AB000A8148 /* TwoSidedPlane_MetallicRoughness.png */,
+			);
+			path = glTF;
+			sourceTree = "<group>";
+		};
 		E84D8709221853F30081B328 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
@@ -380,6 +452,8 @@
 		E84D874B221853F30081B328 /* objects */ = {
 			isa = PBXGroup;
 			children = (
+				E83B173E224780AB000A8148 /* TwoSidedPlane */,
+				E83B173522477F6F000A8148 /* Cube */,
 				E89BB4892226E431005F6DDF /* beautiful_medusa */,
 				E89BB47F2226E104005F6DDF /* deadpool */,
 				E89BB47B2226DF63005F6DDF /* tiamat */,
@@ -575,7 +649,7 @@
 		E87F4CE521AD772F00402370 /* OpenGL */ = {
 			isa = PBXGroup;
 			children = (
-				E89BB4E42236AC47005F6DDF /* 3.2.1.point_shadows.mm */,
+				E89BB4E42236AC47005F6DDF /* 4.normal_mapping.mm */,
 				E84D87BF222413540081B328 /* Common */,
 				E84D870E221853F30081B328 /* Resources */,
 				E84D8709221853F30081B328 /* Shaders */,
@@ -699,7 +773,7 @@
 				E84D87D0222413540081B328 /* Camera.cpp in Sources */,
 				E84D87D2222413540081B328 /* Texture.cpp in Sources */,
 				E84D87D4222413540081B328 /* DirectionLight.cpp in Sources */,
-				E89BB4E52236AC47005F6DDF /* 3.2.1.point_shadows.mm in Sources */,
+				E89BB4E52236AC47005F6DDF /* 4.normal_mapping.mm in Sources */,
 				E84D87E022241D130081B328 /* Spotlight.cpp in Sources */,
 				E84D87DA222417F80081B328 /* PointLight.cpp in Sources */,
 				E84D87EE2225B8CE0081B328 /* Model.cpp in Sources */,

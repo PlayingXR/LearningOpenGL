@@ -94,7 +94,7 @@ void Model::createPlaneModel()
         0.5f, -0.5f,  0.0f,  0.0f,  0.0f, 1.0f,   1.0f, 0.0f,
         0.5f,  0.5f,  0.0f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
     };
-    
+
     std::vector<VertexInfo> verticeInfos;
     std::vector<GLuint> indices;
     std::vector<TextureInfo> textureInfos;

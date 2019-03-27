@@ -391,6 +391,7 @@ int main(int argc, const char * argv[]) {
 
             model = glm::mat4(1.0f);
             model = glm::translate(model, glm::vec3(3.0, 0.0f, -.0));
+            model = glm::rotate(model, glm::radians(45.0f), glm::vec3(1.0, 1.0, 0.0));
             shadowMappingShader.setMat4fv("model", model);
             box.draw(shadowMappingShader);
             
@@ -457,6 +458,7 @@ int main(int argc, const char * argv[]) {
             
             model = glm::mat4(1.0f);
             model = glm::translate(model, glm::vec3(3.0, 0.0f, 0.0));
+            model = glm::rotate(model, glm::radians(45.0f), glm::vec3(1.0, 1.0, 0.0));
             objectShader.setMat4fv("model", model);
             
             //            //法线矩阵
