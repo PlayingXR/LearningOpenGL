@@ -54,8 +54,9 @@ float lastY = SCR_HEIGHT / 2.0f;
 float pitch = 0.0f;
 float yaw = 0.0f;
 
-float shininess = 32.0f;
+float shininess = 5.0f;
 float specularStrength = 0.5f;
+float heightScale = 0.1f;
 
 bool firstMouse = true;
 
@@ -67,8 +68,7 @@ glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 Camera camera(glm::vec3(0.0f, 3.0f, 10.0f));
 
-bool hasNormal = true;
-bool hasNormal2 = true;
+bool hasDisplacement = true;
 
 //窗口大小改变的回调
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
@@ -86,8 +86,7 @@ void processInput(GLFWwindow *window)
             isLineModel = false;
 //            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
             isBlinn = false;
-            hasNormal = false;
-            hasNormal2 = false;
+            hasDisplacement = false;
         }
     }
     if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
@@ -97,8 +96,7 @@ void processInput(GLFWwindow *window)
 //            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             isBlinn = true;
             
-            hasNormal = true;
-            hasNormal2 = true;
+            hasDisplacement = true;
         }
 
     }
@@ -140,6 +138,23 @@ void processInput(GLFWwindow *window)
             shininess = 100.0f;
         }
         std::cout << "shininess: " << shininess << std::endl;
+    }
+    
+    if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS) {
+        if (heightScale > 0.0f) {
+            heightScale -= 0.0005f;
+        } else {
+            heightScale = 0.0f;
+        }
+        std::cout << "heightScale: " << heightScale << std::endl;
+    }
+    if (glfwGetKey(window, GLFW_KEY_9) == GLFW_PRESS) {
+        if (heightScale < 1.0f) {
+            heightScale += 0.0005f;
+        } else {
+            heightScale = 1.0f;
+        }
+        std::cout << "heightScale: " << heightScale << std::endl;
     }
     
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -245,18 +260,17 @@ int main(int argc, const char * argv[]) {
 
         Texture cubeMap(faces);
         
-        Texture planeMap("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/brickwall.jpg");
-        Texture planeNormalMap("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/brickwall_normal.jpg");
+        Texture diffuseMap("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/bricks2.jpg");
+        Texture normalMap("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/bricks2_normal.jpg");
+        Texture depthMap("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/bricks2_disp.jpg");
 
         skyboxShader.setInt("skybox", 0);
         screenShader.setInt("screenTexture", 0);
         
         objectShader.setInt("skybox", 1);
-        objectShader.setInt("texture_diffuse1", 0);
         objectShader.setInt("diffuseMap", 4);
         objectShader.setInt("normalMap", 5);
-        
-        debugShadowMappingShader.setInt("depthMap", 0);
+        objectShader.setInt("depthMap", 6);
         
         Model skybox(GeometrySkybox);
         Model screen(GeometryScreen);
@@ -264,7 +278,7 @@ int main(int argc, const char * argv[]) {
         Model gltfBox("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/objects/Cube/glTF/Cube.gltf");
         Model plane(GeometryPlane);
         
-        glm::vec3 lightPos(0.0f, 0.0f, 0.0f);
+        glm::vec3 lightPos(0.0f, 0.0f, 5.0f);
         
 //        把顶点着色器的Uniform块设置为绑定点0
         objectShader.setBlockBindingPoint("Matrices", 0);
@@ -346,18 +360,17 @@ int main(int argc, const char * argv[]) {
 //            glBufferSubData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(lightSpaceMatrix));
             glBindBuffer(GL_UNIFORM_BUFFER, 0);//释放绑定
             
-            
-            
             glm::vec3 position = camera.position();
             
-            objectShader.setBool("hasNormal", hasNormal);
-            objectShader.setBool("hasNormal2", hasNormal2);
+            objectShader.setBool("hasDisplacement", hasDisplacement);
             
             objectShader.setVec3f("viewPos", position);
             objectShader.setVec3f("lightPos", lightPos);
+            objectShader.setFloat("heightScale", heightScale);
             
-            planeMap.use(GL_TEXTURE4);
-            planeNormalMap.use(GL_TEXTURE5);
+            diffuseMap.use(GL_TEXTURE4);
+            normalMap.use(GL_TEXTURE5);
+            depthMap.use(GL_TEXTURE6);
             
             model = glm::mat4(1.0f);
             model = glm::translate(model, glm::vec3(0.0f, 0.0, -0.3));
@@ -371,7 +384,7 @@ int main(int argc, const char * argv[]) {
             objectShader.setMat4fv("normal", model);
             objectShader.setFloat("Shininess", shininess);
             
-            plane.draw(objectShader);
+            gltfBox.draw(objectShader);
             
             model = glm::mat4(1.0f);
             model = glm::translate(model, lightPos);
