@@ -62,11 +62,15 @@ bool firstMouse = true;
 
 bool isBlinn = true;
 
+bool hasHDR = false;
+
+float exposure = 1.0f;
+
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, 1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
-Camera camera(glm::vec3(0.0f, 3.0f, 10.0f));
+Camera camera(glm::vec3(0.0f, 0.0f, 0.0f));
 
 bool hasDisplacement = true;
 
@@ -86,6 +90,7 @@ void processInput(GLFWwindow *window)
             isLineModel = false;
 //            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
             isBlinn = false;
+            hasHDR = false;
             hasDisplacement = false;
         }
     }
@@ -96,6 +101,7 @@ void processInput(GLFWwindow *window)
 //            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             isBlinn = true;
             
+            hasHDR = true;
             hasDisplacement = true;
         }
 
@@ -141,20 +147,20 @@ void processInput(GLFWwindow *window)
     }
     
     if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS) {
-        if (heightScale > 0.0f) {
-            heightScale -= 0.0005f;
+        if (exposure > 0.0f) {
+            exposure -= 0.01f;
         } else {
-            heightScale = 0.0f;
+            exposure = 0.0f;
         }
-        std::cout << "heightScale: " << heightScale << std::endl;
+        std::cout << "heightScale: " << exposure << std::endl;
     }
     if (glfwGetKey(window, GLFW_KEY_9) == GLFW_PRESS) {
-        if (heightScale < 1.0f) {
-            heightScale += 0.0005f;
+        if (exposure < 5.0f) {
+            exposure += 0.01f;
         } else {
-            heightScale = 1.0f;
+            exposure = 5.0f;
         }
-        std::cout << "heightScale: " << heightScale << std::endl;
+        std::cout << "heightScale: " << exposure << std::endl;
     }
     
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -236,8 +242,8 @@ int main(int argc, const char * argv[]) {
         Shader skyboxShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/skybox.vs",
                             "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/skybox.fs");
         
-        Shader screenShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/framebuffersScreen.vs",
-                            "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/framebuffersScreen.fs");
+        Shader screenShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/framebuffers.vs",
+                            "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/framebuffers.fs");
         
         Shader lightShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/light.vs",
                             "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/light.fs");
@@ -260,7 +266,7 @@ int main(int argc, const char * argv[]) {
 
         Texture cubeMap(faces);
         
-        Texture diffuseMap("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/bricks2.jpg");
+        Texture diffuseMap("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/wood.png");
         Texture normalMap("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/bricks2_normal.jpg");
         Texture depthMap("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/bricks2_disp.jpg");
 
@@ -280,10 +286,87 @@ int main(int argc, const char * argv[]) {
         
         glm::vec3 lightPos(0.0f, 0.0f, 5.0f);
         
+        std::vector<glm::vec3> lightPositions;
+        lightPositions.push_back(glm::vec3( 0.0f,  0.0f, 49.5f)); // back light
+        lightPositions.push_back(glm::vec3(-1.4f, -1.9f, 9.0f));
+        lightPositions.push_back(glm::vec3( 0.0f, -1.8f, 4.0f));
+        lightPositions.push_back(glm::vec3( 0.8f, -1.7f, 6.0f));
+        
+//        lightPositions.push_back(glm::vec3( 0.0f,  0.0f, 49.5f)); // back light
+//        lightPositions.push_back(glm::vec3(-1.4f, -1.9f, 9.0f));
+//        lightPositions.push_back(glm::vec3( 0.0f, -1.8f, 4.0f));
+//        lightPositions.push_back(glm::vec3( 0.8f, -1.7f, 6.0f));
+//
+//        lightPositions.push_back(glm::vec3( 0.0f,  0.0f, 49.5f)); // back light
+//        lightPositions.push_back(glm::vec3(-1.4f, -1.9f, 9.0f));
+//        lightPositions.push_back(glm::vec3( 0.0f, -1.8f, 4.0f));
+//        lightPositions.push_back(glm::vec3( 0.8f, -1.7f, 6.0f));
+//
+//        lightPositions.push_back(glm::vec3( 0.0f,  0.0f, 49.5f)); // back light
+//        lightPositions.push_back(glm::vec3(-1.4f, -1.9f, 9.0f));
+//        lightPositions.push_back(glm::vec3( 0.0f, -1.8f, 4.0f));
+//        lightPositions.push_back(glm::vec3( 0.8f, -1.7f, 6.0f));
+        // colors
+        std::vector<glm::vec3> lightColors;
+        lightColors.push_back(glm::vec3(200.0f, 200.0f, 200.0f));
+        lightColors.push_back(glm::vec3(0.1f, 0.0f, 0.0f));
+        lightColors.push_back(glm::vec3(0.0f, 0.0f, 0.2f));
+        lightColors.push_back(glm::vec3(0.0f, 0.1f, 0.0f));
+        
+//        lightColors.push_back(glm::vec3(200.0f, 200.0f, 200.0f));
+//        lightColors.push_back(glm::vec3(0.1f, 0.0f, 0.0f));
+//        lightColors.push_back(glm::vec3(0.0f, 0.0f, 0.2f));
+//        lightColors.push_back(glm::vec3(0.0f, 0.1f, 0.0f));
+//
+//        lightColors.push_back(glm::vec3(200.0f, 200.0f, 200.0f));
+//        lightColors.push_back(glm::vec3(0.1f, 0.0f, 0.0f));
+//        lightColors.push_back(glm::vec3(0.0f, 0.0f, 0.2f));
+//        lightColors.push_back(glm::vec3(0.0f, 0.1f, 0.0f));
+//
+//        lightColors.push_back(glm::vec3(200.0f, 200.0f, 200.0f));
+//        lightColors.push_back(glm::vec3(0.1f, 0.0f, 0.0f));
+//        lightColors.push_back(glm::vec3(0.0f, 0.0f, 0.2f));
+//        lightColors.push_back(glm::vec3(0.0f, 0.1f, 0.0f));
+//
+//        lightColors.push_back(glm::vec3(200.0f, 200.0f, 200.0f));
+//        lightColors.push_back(glm::vec3(0.1f, 0.0f, 0.0f));
+//        lightColors.push_back(glm::vec3(0.0f, 0.0f, 0.2f));
+//        lightColors.push_back(glm::vec3(0.0f, 0.1f, 0.0f));
+        
 //        把顶点着色器的Uniform块设置为绑定点0
         objectShader.setBlockBindingPoint("Matrices", 0);
         skyboxShader.setBlockBindingPoint("Matrices", 0);
         lightShader.setBlockBindingPoint("Matrices", 0);
+        
+        unsigned int fbo;
+        glGenFramebuffers(1, &fbo);
+        
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+        
+        unsigned int texture;
+        glGenTextures(1, &texture);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
+        
+        unsigned int rbo;
+        glGenRenderbuffers(1, &rbo);
+        glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT);
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+        
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+        
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+            std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+        }
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        
         
         //开启MSAA
 //        glEnable(GL_MULTISAMPLE);
@@ -338,6 +421,8 @@ int main(int argc, const char * argv[]) {
             
             glm::mat4 model = glm::mat4(1.0f);
             
+            glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+            
 //            lightPos.z = sin(glfwGetTime() * 0.5) * 3.0;
             
             //渲染指令
@@ -346,6 +431,7 @@ int main(int argc, const char * argv[]) {
             //glClear是一个状态使用函数，清除颜色缓冲、深度缓冲、模板缓冲
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 //            glCullFace(GL_BACK);
+            glEnable(GL_DEPTH_TEST);
             
             //禁用深度写入
             //            glDepthMask(GL_FALSE);
@@ -362,20 +448,21 @@ int main(int argc, const char * argv[]) {
             
             glm::vec3 position = camera.position();
             
-            objectShader.setBool("hasDisplacement", hasDisplacement);
-            
             objectShader.setVec3f("viewPos", position);
-            objectShader.setVec3f("lightPos", lightPos);
-            objectShader.setFloat("heightScale", heightScale);
+            screenShader.setBool("hasHDR", hasHDR);
             
             diffuseMap.use(GL_TEXTURE4);
-            normalMap.use(GL_TEXTURE5);
-            depthMap.use(GL_TEXTURE6);
+            
+            for (unsigned int i = 0; i < lightPositions.size(); i++)
+            {
+                objectShader.setVec3f("lights[" + std::to_string(i) + "].Position", lightPositions[i]);
+                objectShader.setVec3f("lights[" + std::to_string(i) + "].Color", lightColors[i]);
+            }
             
             model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(0.0f, 0.0, -0.3));
+            model = glm::translate(model, glm::vec3(0.0f, 0.0, 25.0f));
 //            model = glm::rotate(model, glm::radians(45.0f), glm::vec3(1.0, 1.0, 0.0));
-            model = glm::scale(model, glm::vec3(5.0f, 5.0f, 1.0f));
+            model = glm::scale(model, glm::vec3(2.5f, 2.5f, 27.5f));
             objectShader.setMat4fv("model", model);
             
             //            //法线矩阵
@@ -385,12 +472,12 @@ int main(int argc, const char * argv[]) {
             objectShader.setFloat("Shininess", shininess);
             
             gltfBox.draw(objectShader);
-            
-            model = glm::mat4(1.0f);
-            model = glm::translate(model, lightPos);
-            model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
-            lightShader.setMat4fv("model", model);
-            box.draw(lightShader);
+//
+//            model = glm::mat4(1.0f);
+//            model = glm::translate(model, lightPos);
+//            model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
+//            lightShader.setMat4fv("model", model);
+//            box.draw(lightShader);
 
 //            glBindVertexArray(0);
 
@@ -402,6 +489,15 @@ int main(int argc, const char * argv[]) {
 //            glCullFace(GL_BACK);
 //            glDepthFunc(GL_LESS);
             
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT);
+            
+            screenShader.use();
+            screenShader.setFloat("exposure", exposure);
+            glDisable(GL_DEPTH_TEST);
+            glBindTexture(GL_TEXTURE_2D, texture);
+            screen.draw(screenShader);
 
             //检查有没有什么出发事件（键盘输入，鼠标移动等）
             glfwPollEvents();
