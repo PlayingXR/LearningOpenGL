@@ -62,7 +62,7 @@ bool firstMouse = true;
 
 bool isBlinn = true;
 
-bool hasHDR = false;
+bool hasBloom = false;
 
 float exposure = 1.0f;
 
@@ -90,8 +90,9 @@ void processInput(GLFWwindow *window)
             isLineModel = false;
 //            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
             isBlinn = false;
-            hasHDR = false;
+            hasBloom = false;
             hasDisplacement = false;
+            std::cout << "关闭bloom" << shininess << std::endl;
         }
     }
     if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
@@ -101,10 +102,11 @@ void processInput(GLFWwindow *window)
 //            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             isBlinn = true;
             
-            hasHDR = true;
+            hasBloom = true;
             hasDisplacement = true;
+            
+            std::cout << "开启bloom" << shininess << std::endl;
         }
-
     }
     
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
@@ -239,21 +241,17 @@ int main(int argc, const char * argv[]) {
         Shader objectShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/shader.vs",
                             "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/shader.fs");
         
+        Shader lightShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/light.vs",
+                           "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/light.fs");
+        
         Shader skyboxShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/skybox.vs",
                             "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/skybox.fs");
         
-        Shader screenShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/framebuffers.vs",
-                            "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/framebuffers.fs");
+        Shader blurShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/bloomBlur.vs",
+                          "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/bloomBlur.fs");
         
-        Shader lightShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/light.vs",
-                            "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/light.fs");
-        
-        Shader shadowMappingShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/shadowMapping.vs",
-                                   "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/shadowMapping.gs",
-                                   "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/shadowMapping.fs");
-        
-        Shader debugShadowMappingShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/debugShadowMapping.vs",
-                                        "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/debugShadowMapping.fs");
+        Shader finalShader("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/bloomFinal.vs",
+                           "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Shaders/bloomFinal.fs");
         
         std::vector<std::string> faces{
             "/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/skybox/right.jpg",
@@ -268,15 +266,16 @@ int main(int argc, const char * argv[]) {
         
         Texture diffuseMap("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/wood.png");
         Texture normalMap("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/bricks2_normal.jpg");
-        Texture depthMap("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/bricks2_disp.jpg");
+        Texture containerMap("/Users/wxh/Git/GitHub/LearningOpenGL/OpenGL/Resources/textures/container.jpg");
 
         skyboxShader.setInt("skybox", 0);
-        screenShader.setInt("screenTexture", 0);
+        blurShader.setInt("image", 0);
+        
+        finalShader.setInt("scene", 0);
+        finalShader.setInt("bloomBlur", 1);
         
         objectShader.setInt("skybox", 1);
         objectShader.setInt("diffuseMap", 4);
-        objectShader.setInt("normalMap", 5);
-        objectShader.setInt("depthMap", 6);
         
         Model skybox(GeometrySkybox);
         Model screen(GeometryScreen);
@@ -287,87 +286,86 @@ int main(int argc, const char * argv[]) {
         glm::vec3 lightPos(0.0f, 0.0f, 5.0f);
         
         std::vector<glm::vec3> lightPositions;
-        lightPositions.push_back(glm::vec3( 0.0f,  0.0f, 49.5f)); // back light
-        lightPositions.push_back(glm::vec3(-1.4f, -1.9f, 9.0f));
-        lightPositions.push_back(glm::vec3( 0.0f, -1.8f, 4.0f));
-        lightPositions.push_back(glm::vec3( 0.8f, -1.7f, 6.0f));
+        lightPositions.push_back(glm::vec3( 0.0f, 0.5f,  1.5f));
+        lightPositions.push_back(glm::vec3(-4.0f, 0.5f, -3.0f));
+        lightPositions.push_back(glm::vec3( 3.0f, 0.5f,  1.0f));
+        lightPositions.push_back(glm::vec3(-.8f,  2.4f, -1.0f));
         
-//        lightPositions.push_back(glm::vec3( 0.0f,  0.0f, 49.5f)); // back light
-//        lightPositions.push_back(glm::vec3(-1.4f, -1.9f, 9.0f));
-//        lightPositions.push_back(glm::vec3( 0.0f, -1.8f, 4.0f));
-//        lightPositions.push_back(glm::vec3( 0.8f, -1.7f, 6.0f));
-//
-//        lightPositions.push_back(glm::vec3( 0.0f,  0.0f, 49.5f)); // back light
-//        lightPositions.push_back(glm::vec3(-1.4f, -1.9f, 9.0f));
-//        lightPositions.push_back(glm::vec3( 0.0f, -1.8f, 4.0f));
-//        lightPositions.push_back(glm::vec3( 0.8f, -1.7f, 6.0f));
-//
-//        lightPositions.push_back(glm::vec3( 0.0f,  0.0f, 49.5f)); // back light
-//        lightPositions.push_back(glm::vec3(-1.4f, -1.9f, 9.0f));
-//        lightPositions.push_back(glm::vec3( 0.0f, -1.8f, 4.0f));
-//        lightPositions.push_back(glm::vec3( 0.8f, -1.7f, 6.0f));
+        
         // colors
         std::vector<glm::vec3> lightColors;
-        lightColors.push_back(glm::vec3(200.0f, 200.0f, 200.0f));
-        lightColors.push_back(glm::vec3(0.1f, 0.0f, 0.0f));
-        lightColors.push_back(glm::vec3(0.0f, 0.0f, 0.2f));
-        lightColors.push_back(glm::vec3(0.0f, 0.1f, 0.0f));
-        
-//        lightColors.push_back(glm::vec3(200.0f, 200.0f, 200.0f));
-//        lightColors.push_back(glm::vec3(0.1f, 0.0f, 0.0f));
-//        lightColors.push_back(glm::vec3(0.0f, 0.0f, 0.2f));
-//        lightColors.push_back(glm::vec3(0.0f, 0.1f, 0.0f));
-//
-//        lightColors.push_back(glm::vec3(200.0f, 200.0f, 200.0f));
-//        lightColors.push_back(glm::vec3(0.1f, 0.0f, 0.0f));
-//        lightColors.push_back(glm::vec3(0.0f, 0.0f, 0.2f));
-//        lightColors.push_back(glm::vec3(0.0f, 0.1f, 0.0f));
-//
-//        lightColors.push_back(glm::vec3(200.0f, 200.0f, 200.0f));
-//        lightColors.push_back(glm::vec3(0.1f, 0.0f, 0.0f));
-//        lightColors.push_back(glm::vec3(0.0f, 0.0f, 0.2f));
-//        lightColors.push_back(glm::vec3(0.0f, 0.1f, 0.0f));
-//
-//        lightColors.push_back(glm::vec3(200.0f, 200.0f, 200.0f));
-//        lightColors.push_back(glm::vec3(0.1f, 0.0f, 0.0f));
-//        lightColors.push_back(glm::vec3(0.0f, 0.0f, 0.2f));
-//        lightColors.push_back(glm::vec3(0.0f, 0.1f, 0.0f));
+        lightColors.push_back(glm::vec3(5.0f,   5.0f,  5.0f));
+        lightColors.push_back(glm::vec3(10.0f,  0.0f,  0.0f));
+        lightColors.push_back(glm::vec3(0.0f,   0.0f,  15.0f));
+        lightColors.push_back(glm::vec3(0.0f,   5.0f,  0.0f));
         
 //        把顶点着色器的Uniform块设置为绑定点0
         objectShader.setBlockBindingPoint("Matrices", 0);
         skyboxShader.setBlockBindingPoint("Matrices", 0);
         lightShader.setBlockBindingPoint("Matrices", 0);
         
-        unsigned int fbo;
-        glGenFramebuffers(1, &fbo);
+        unsigned int hdrFBO;
+        glGenFramebuffers(1, &hdrFBO);
         
-        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+        glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
         
-        unsigned int texture;
-        glGenTextures(1, &texture);
-        glBindTexture(GL_TEXTURE_2D, texture);
+        unsigned int colorBuffers[2];
+        glGenTextures(2, colorBuffers);
         
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glBindTexture(GL_TEXTURE_2D, 0);
-        
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
+        for (int i = 0; i < 2; i++) {
+            glBindTexture(GL_TEXTURE_2D, colorBuffers[i]);
+            
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            
+            glBindTexture(GL_TEXTURE_2D, 0);
+            
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBuffers[i], 0);
+        }
         
         unsigned int rbo;
         glGenRenderbuffers(1, &rbo);
         glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, SCR_WIDTH, SCR_HEIGHT);
         glBindRenderbuffer(GL_RENDERBUFFER, 0);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo);
         
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+        GLuint attachments[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+        glDrawBuffers(2, attachments);
         
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
             std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
         }
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         
-        
+        unsigned int pingpongFBO[2];
+        unsigned int pingpongBuffer[2];
+        glGenFramebuffers(2, pingpongFBO);
+        glGenTextures(2, pingpongBuffer);
+
+        for (int i = 0; i < 2; i++) {
+            glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[i]);
+            glBindTexture(GL_TEXTURE_2D, pingpongBuffer[i]);
+
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            
+            glBindTexture(GL_TEXTURE_2D, 0);
+            
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingpongBuffer[i], 0);
+
+            if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+                std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+            }
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            
+        }
+
         //开启MSAA
 //        glEnable(GL_MULTISAMPLE);
         
@@ -390,18 +388,18 @@ int main(int argc, const char * argv[]) {
 
         //设置混合因子
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        
+
 //        也可以使用glBlendFuncSeparate为RGB和alpha通道分别设置不同的选项
         glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
-        
+
 //        设置运算符
         glBlendEquation(GL_FUNC_ADD);
         
-//        //启用面剔除
-//        glEnable(GL_CULL_FACE);
-//
-//        //设置剔除背面
-//        glCullFace(GL_BACK);
+        //启用面剔除
+        glEnable(GL_CULL_FACE);
+
+        //设置剔除背面
+        glCullFace(GL_BACK);
         
         
         //指定逆时针环绕顺序为前面
@@ -421,7 +419,7 @@ int main(int argc, const char * argv[]) {
             
             glm::mat4 model = glm::mat4(1.0f);
             
-            glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+            
             
 //            lightPos.z = sin(glfwGetTime() * 0.5) * 3.0;
             
@@ -430,8 +428,13 @@ int main(int argc, const char * argv[]) {
 
             //glClear是一个状态使用函数，清除颜色缓冲、深度缓冲、模板缓冲
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            
+            glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 //            glCullFace(GL_BACK);
             glEnable(GL_DEPTH_TEST);
+            
+            glEnable(GL_BLEND);
             
             //禁用深度写入
             //            glDepthMask(GL_FALSE);
@@ -449,29 +452,128 @@ int main(int argc, const char * argv[]) {
             glm::vec3 position = camera.position();
             
             objectShader.setVec3f("viewPos", position);
-            screenShader.setBool("hasHDR", hasHDR);
-            
-            diffuseMap.use(GL_TEXTURE4);
             
             for (unsigned int i = 0; i < lightPositions.size(); i++)
             {
                 objectShader.setVec3f("lights[" + std::to_string(i) + "].Position", lightPositions[i]);
                 objectShader.setVec3f("lights[" + std::to_string(i) + "].Color", lightColors[i]);
             }
-            
+            //一
             model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(0.0f, 0.0, 25.0f));
-//            model = glm::rotate(model, glm::radians(45.0f), glm::vec3(1.0, 1.0, 0.0));
-            model = glm::scale(model, glm::vec3(2.5f, 2.5f, 27.5f));
+            model = glm::translate(model, glm::vec3(0.0f, -1.0f, 0.0));
+            model = glm::scale(model, glm::vec3(12.5f, 0.5f, 12.5f));
             objectShader.setMat4fv("model", model);
             
             //            //法线矩阵
             model = glm::inverse(model);    //逆矩阵
             model = glm::transpose(model);  //转置矩阵
             objectShader.setMat4fv("normal", model);
-            objectShader.setFloat("Shininess", shininess);
             
+            diffuseMap.use(GL_TEXTURE4);
             gltfBox.draw(objectShader);
+            
+            //二
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(0.0f, 1.5f, 0.0));
+            model = glm::scale(model, glm::vec3(0.5f));
+            objectShader.setMat4fv("model", model);
+            
+            //            //法线矩阵
+            model = glm::inverse(model);    //逆矩阵
+            model = glm::transpose(model);  //转置矩阵
+            objectShader.setMat4fv("normal", model);
+            
+            containerMap.use(GL_TEXTURE4);
+            gltfBox.draw(objectShader);
+            
+            //三
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(2.0f, 0.0f, 1.0));
+            model = glm::scale(model, glm::vec3(0.5f));
+            objectShader.setMat4fv("model", model);
+            
+            //            //法线矩阵
+            model = glm::inverse(model);    //逆矩阵
+            model = glm::transpose(model);  //转置矩阵
+            objectShader.setMat4fv("normal", model);
+            
+            diffuseMap.use(GL_TEXTURE4);
+            gltfBox.draw(objectShader);
+            
+            
+            //四
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(-1.0f, -1.0f, 2.0));
+            model = glm::rotate(model, glm::radians(60.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
+            objectShader.setMat4fv("model", model);
+            
+            //            //法线矩阵
+            model = glm::inverse(model);    //逆矩阵
+            model = glm::transpose(model);  //转置矩阵
+            objectShader.setMat4fv("normal", model);
+            
+            containerMap.use(GL_TEXTURE4);
+            gltfBox.draw(objectShader);
+            
+            //五
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(0.0f, 2.7f, 4.0));
+            model = glm::rotate(model, glm::radians(23.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
+            model = glm::scale(model, glm::vec3(1.25));
+            objectShader.setMat4fv("model", model);
+            
+            //            //法线矩阵
+            model = glm::inverse(model);    //逆矩阵
+            model = glm::transpose(model);  //转置矩阵
+            objectShader.setMat4fv("normal", model);
+            
+            diffuseMap.use(GL_TEXTURE4);
+            gltfBox.draw(objectShader);
+            
+            //六
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(-2.0f, 1.0f, -3.0));
+            model = glm::rotate(model, glm::radians(124.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
+            objectShader.setMat4fv("model", model);
+            
+            //            //法线矩阵
+            model = glm::inverse(model);    //逆矩阵
+            model = glm::transpose(model);  //转置矩阵
+            objectShader.setMat4fv("normal", model);
+            
+            containerMap.use(GL_TEXTURE4);
+            gltfBox.draw(objectShader);
+            
+            //七
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(-3.0f, 0.0f, 0.0));
+            model = glm::scale(model, glm::vec3(0.5f));
+            objectShader.setMat4fv("model", model);
+            
+            //            //法线矩阵
+            model = glm::inverse(model);    //逆矩阵
+            model = glm::transpose(model);  //转置矩阵
+            objectShader.setMat4fv("normal", model);
+            
+            diffuseMap.use(GL_TEXTURE4);
+            gltfBox.draw(objectShader);
+            
+            //灯光
+            for (int i = 0; i < lightPositions.size(); i++) {
+                glm::vec3 position = lightPositions[i];
+                glm::vec3 color = lightColors[i];
+                
+                model = glm::mat4(1.0f);
+                model = glm::translate(model, position);
+                model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
+                
+                lightShader.setVec3f("color", color);
+                lightShader.setMat4fv("model", model);
+                box.draw(lightShader);
+            }
+            
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            glDisable(GL_BLEND);
 //
 //            model = glm::mat4(1.0f);
 //            model = glm::translate(model, lightPos);
@@ -489,16 +591,39 @@ int main(int argc, const char * argv[]) {
 //            glCullFace(GL_BACK);
 //            glDepthFunc(GL_LESS);
             
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-            glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT);
-            
-            screenShader.use();
-            screenShader.setFloat("exposure", exposure);
-            glDisable(GL_DEPTH_TEST);
-            glBindTexture(GL_TEXTURE_2D, texture);
-            screen.draw(screenShader);
+//            glClearColor(0.0, 0.0, 0.0, 1.0f);
+//            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+            bool horizontal = true, first_iteration = true;
+            unsigned int amount = 10;
+            for (unsigned int i = 0 ; i < amount; i++) {
+                glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[horizontal]);
+                blurShader.setBool("horizontal", horizontal);
+
+                glBindTexture(GL_TEXTURE_2D, first_iteration ? colorBuffers[1] : pingpongBuffer[!horizontal]);
+                screen.draw(blurShader);
+
+                horizontal = !horizontal;
+                if (first_iteration) {
+                    first_iteration = false;
+                }
+                glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            }
+
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glDisable(GL_DEPTH_TEST);
+
+            finalShader.use();
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);
+
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, pingpongBuffer[!horizontal]);
+
+            finalShader.setBool("hasBloom", hasBloom);
+            finalShader.setFloat("exposure", exposure);
+            screen.draw(finalShader);
+            
             //检查有没有什么出发事件（键盘输入，鼠标移动等）
             glfwPollEvents();
             
