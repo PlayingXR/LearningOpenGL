@@ -444,6 +444,11 @@ int main(int argc, const char * argv[]) {
         
         //使用while循环来不断的渲染画面，我们称之为渲染循环（Render Loop）
         //没次循环开始之前检查一次GLFW是否被要求退出
+        
+        float lastTime = glfwGetTime();
+        int times = 0;
+        float nowTime = lastTime;
+        
         while (!glfwWindowShouldClose(window)) {
             float currentFrame = glfwGetTime();
             deltaTime = currentFrame - lastFrame;
@@ -453,6 +458,15 @@ int main(int argc, const char * argv[]) {
             processInput(window);
 
 //            lightPos.z = sin(glfwGetTime() * 0.5) * 3.0;
+            times += 1;
+            nowTime = glfwGetTime();
+            if ((nowTime - lastTime) >= 1.0) {
+                std::cout << "FPS: " << times << ", lastTime: " << lastTime << ", nowTime: " <<nowTime << std::endl;
+                lastTime = nowTime;
+                times = 0;
+            }
+            
+            
             
             //渲染指令
             glClearColor(0.0, 0.0, 0.0, 1.0f);
