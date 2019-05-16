@@ -28,11 +28,12 @@ uniform mat4 model;         //模型矩阵
 
 void main()
 {
-    gl_Position = projection * view * model * vec4(aPos, 1.0);
+    vec4 worldPos = model * vec4(aPos, 1.0);
+    gl_Position = projection * view * worldPos;
     
-    vs_out.TexCoords = aTexCoords;
+    vs_out.TexCoords = vec2(1.0, -1.0) * aTexCoords;
     vs_out.Normal = mat3(normal) * aNormal;
-    vs_out.FragPos = vec3(model * vec4(aPos, 1.0));
+    vs_out.FragPos = worldPos.xyz;
     
 //    vec3 T = normalize(mat3(normal) * aTangent);
 //    vec3 N = normalize(mat3(normal) * aNormal);

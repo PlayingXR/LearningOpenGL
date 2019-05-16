@@ -1,8 +1,9 @@
 #version 330 core
 //out vec4 FragColor;
 
-layout (location = 0) out vec4 FragColor;
-layout (location = 1) out vec4 BrightColor;
+layout (location = 0) out vec3 gPosition;
+layout (location = 1) out vec3 gNormal;
+layout (location = 2) out vec4 gAlbedoSpec;
 
 uniform sampler2D texture_diffuse1;
 uniform sampler2D texture_specular1;
@@ -26,57 +27,29 @@ in VS_OUT
     vec3 TangentLightPos;
 } fs_in;
 
-struct Light {
-    vec3 Position;
-    vec3 Color;
-};
-
 uniform bool hasDisplacement;
 
 vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir);
 
-uniform vec3 viewPos;
-
-uniform Light lights[16];
-
 void main()
 {
     vec2 texCoords = fs_in.TexCoords;
+    vec4 color = texture(texture_diffuse1, texCoords).rgba;
+    vec3 specular = texture(texture_specular1, texCoords).rgb;
     
-    vec3 color = texture(diffuseMap, texCoords).rgb;
+    //Position
+    gPosition = fs_in.FragPos;
     
-    vec3 normal = normalize(fs_in.Normal);
+    //gNormal
+    gNormal = normalize(fs_in.Normal);
     
-    vec3 ambient = 0.0 * color;
-    vec3 lighting = vec3(0.0);
+    //color
+    gAlbedoSpec.rgb = color.rgb;
     
-    vec3 fragPosition = fs_in.FragPos;
+    //specular
+    gAlbedoSpec.a = 0.2126 * specular.r + 0.7152 * specular.g + 0.0722 * specular.b;
     
-    for (int i = 0; i < 16; i++) {
-        
-        vec3 lightPosition = lights[i].Position;
-        
-        //diffuse
-        vec3 lightDir = normalize(lightPosition - fragPosition);
-        float diff = max(dot(lightDir, normal), 0.0);
-        vec3 diffuse = lights[i].Color * diff * color;
-        
-        vec3 result = diffuse;
-        
-        float dis = length(fragPosition - lightPosition);
-        result *= 1.0 / ( dis * dis);
-        lighting += result;
-    }
     
-    vec3 result = ambient + lighting;
-    float brightness = dot(result, vec3(0.2126, 0.7152, 0.0722));
-    if (brightness > 1.0) {
-        BrightColor = vec4(result, 1.0);
-    } else {
-        BrightColor = vec4(0.0, 0.0, 0.0, 1.0);
-    }
-
-    FragColor = vec4(lighting, 1.0);
 }
 //vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir)
 //{
