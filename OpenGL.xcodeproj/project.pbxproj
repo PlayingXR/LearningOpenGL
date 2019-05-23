@@ -23,7 +23,7 @@
 		E87F4D2E21AD7F7A00402370 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E87F4D2D21AD7F7A00402370 /* GLUT.framework */; };
 		E87F4D3021AD7F8100402370 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E87F4D2F21AD7F8100402370 /* CoreVideo.framework */; };
 		E87F4D3221AD7F8800402370 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E87F4D3121AD7F8800402370 /* IOKit.framework */; };
-		E89BB4E52236AC47005F6DDF /* 8.2.deferred_shading_volumes.mm in Sources */ = {isa = PBXBuildFile; fileRef = E89BB4E42236AC47005F6DDF /* 8.2.deferred_shading_volumes.mm */; };
+		E89BB4E52236AC47005F6DDF /* 9.ssao.mm in Sources */ = {isa = PBXBuildFile; fileRef = E89BB4E42236AC47005F6DDF /* 9.ssao.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -204,7 +204,7 @@
 		E89BB4DA2232D79C005F6DDF /* object.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = object.vs; sourceTree = "<group>"; };
 		E89BB4DB2232D79C005F6DDF /* object.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = object.fs; sourceTree = "<group>"; };
 		E89BB4DC22355C2D005F6DDF /* object.gs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = object.gs; sourceTree = "<group>"; };
-		E89BB4E42236AC47005F6DDF /* 8.2.deferred_shading_volumes.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = 8.2.deferred_shading_volumes.mm; sourceTree = "<group>"; };
+		E89BB4E42236AC47005F6DDF /* 9.ssao.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = 9.ssao.mm; sourceTree = "<group>"; };
 		E89BB4E62236BA3A005F6DDF /* planet.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = planet.vs; sourceTree = "<group>"; };
 		E89BB4E72236BA3A005F6DDF /* planet.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = planet.fs; sourceTree = "<group>"; };
 		E89BB4E8223D3AF9005F6DDF /* shadowMapping.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = shadowMapping.vs; sourceTree = "<group>"; };
@@ -215,6 +215,10 @@
 		E8B9B550228312A40089A7C8 /* bloomBlur.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = bloomBlur.vs; sourceTree = "<group>"; };
 		E8B9B551228312A40089A7C8 /* lightingPassShader.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = lightingPassShader.vs; sourceTree = "<group>"; };
 		E8B9B552228312A40089A7C8 /* bloomBlur.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = bloomBlur.fs; sourceTree = "<group>"; };
+		E8B9B553228ED4690089A7C8 /* ssaoShader.fs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = ssaoShader.fs; sourceTree = "<group>"; };
+		E8B9B554228ED4690089A7C8 /* ssaoShader.vs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = ssaoShader.vs; sourceTree = "<group>"; };
+		E8B9B55522944DAE0089A7C8 /* ssaoBlurShader.fs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = ssaoBlurShader.fs; sourceTree = "<group>"; };
+		E8B9B55622945B9B0089A7C8 /* gBufferShaderDebug.fs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = gBufferShaderDebug.fs; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -310,6 +314,10 @@
 				E8B9B550228312A40089A7C8 /* bloomBlur.vs */,
 				E8B9B54F228312A40089A7C8 /* lightingPassShader.fs */,
 				E8B9B551228312A40089A7C8 /* lightingPassShader.vs */,
+				E8B9B553228ED4690089A7C8 /* ssaoShader.fs */,
+				E8B9B554228ED4690089A7C8 /* ssaoShader.vs */,
+				E8B9B55522944DAE0089A7C8 /* ssaoBlurShader.fs */,
+				E8B9B55622945B9B0089A7C8 /* gBufferShaderDebug.fs */,
 				E84D870B221853F30081B328 /* gBufferShader.vs */,
 				E84D870C221853F30081B328 /* gBufferShader.fs */,
 				E89BB4E9223D3AF9005F6DDF /* shadowMapping.fs */,
@@ -657,7 +665,7 @@
 		E87F4CE521AD772F00402370 /* OpenGL */ = {
 			isa = PBXGroup;
 			children = (
-				E89BB4E42236AC47005F6DDF /* 8.2.deferred_shading_volumes.mm */,
+				E89BB4E42236AC47005F6DDF /* 9.ssao.mm */,
 				E84D87BF222413540081B328 /* Common */,
 				E84D870E221853F30081B328 /* Resources */,
 				E84D8709221853F30081B328 /* Shaders */,
@@ -781,7 +789,7 @@
 				E84D87D0222413540081B328 /* Camera.cpp in Sources */,
 				E84D87D2222413540081B328 /* Texture.cpp in Sources */,
 				E84D87D4222413540081B328 /* DirectionLight.cpp in Sources */,
-				E89BB4E52236AC47005F6DDF /* 8.2.deferred_shading_volumes.mm in Sources */,
+				E89BB4E52236AC47005F6DDF /* 9.ssao.mm in Sources */,
 				E84D87E022241D130081B328 /* Spotlight.cpp in Sources */,
 				E84D87DA222417F80081B328 /* PointLight.cpp in Sources */,
 				E84D87EE2225B8CE0081B328 /* Model.cpp in Sources */,
